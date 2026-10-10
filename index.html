@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OT Hours Dashboard</title>
+  <title>OT Hours & Analytics Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -30,9 +30,9 @@
       line-height: 1.5;
     }
     .app {
-      max-width: 1280px;
+      max-width: 1380px;
       margin: 0 auto;
-      padding: 20px 16px 80px;
+      padding: 24px 20px 80px;
     }
     header {
       display: flex;
@@ -40,7 +40,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       padding-bottom: 20px;
       border-bottom: 1px solid var(--border);
     }
@@ -82,6 +82,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-top: 4px;
     }
     .status .dot {
       width: 8px; height: 8px;
@@ -97,7 +98,7 @@
     /* Cards */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 14px;
       margin-bottom: 28px;
     }
@@ -116,7 +117,7 @@
       margin-bottom: 6px;
     }
     .card .value {
-      font-size: 1.75rem;
+      font-size: 1.7rem;
       font-weight: 700;
       letter-spacing: -0.03em;
     }
@@ -127,15 +128,16 @@
     }
     .card.highlight .value { color: var(--accent2); }
     .card.amber .value { color: var(--accent3); }
+    .card.purple .value { color: #a855f7; }
 
-    /* Layout */
+    /* Layout Grids */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 980px) {
       .grid-2 { grid-template-columns: 1fr; }
     }
     .panel {
@@ -146,29 +148,21 @@
       box-shadow: var(--shadow);
     }
     .panel h2 {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .panel h2 .icon { opacity: 0.7; }
 
     /* Charts */
     .chart-wrap {
       position: relative;
-      height: 260px;
+      height: 270px;
     }
 
-    /* Table */
-    .table-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
-      align-items: center;
-    }
+    /* Controls, Forms, Inputs */
     input, select {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -180,6 +174,111 @@
     }
     input:focus, select:focus { border-color: var(--accent); }
     input::placeholder { color: var(--muted); }
+
+    /* Salary Calculator Form */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .payout-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .payout-box .payout-title {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .payout-box .payout-amount {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    /* Calendar */
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+    .cal-day-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 6px 0;
+    }
+    .cal-cell {
+      min-height: 58px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .cal-cell:hover { border-color: var(--accent); }
+    .cal-cell.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+    }
+    .cal-cell .day-num {
+      font-weight: 600;
+      text-align: left;
+      opacity: 0.8;
+    }
+    .cal-cell.has-ot {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+    .cal-cell .ot-tag {
+      background: rgba(34, 197, 94, 0.25);
+      color: #4ade80;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.7rem;
+      align-self: flex-end;
+    }
+
+    /* Table */
+    .table-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
     .table-wrap {
       overflow-x: auto;
       border-radius: 8px;
@@ -207,7 +306,6 @@
       top: 0;
     }
     tr:hover td { background: rgba(59,130,246,0.06); }
-    tr:last-child td { border-bottom: none; }
     .badge {
       display: inline-block;
       padding: 2px 8px;
@@ -223,7 +321,7 @@
     .chat-panel {
       display: flex;
       flex-direction: column;
-      height: 420px;
+      height: 480px;
     }
     .chat-messages {
       flex: 1;
@@ -237,7 +335,7 @@
       max-width: 90%;
       padding: 10px 14px;
       border-radius: 12px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       line-height: 1.45;
     }
     .msg.bot {
@@ -256,9 +354,7 @@
       gap: 8px;
       margin-top: 12px;
     }
-    .chat-input-row input {
-      flex: 1;
-    }
+    .chat-input-row input { flex: 1; }
     .suggestions {
       display: flex;
       flex-wrap: wrap;
@@ -267,7 +363,7 @@
     }
     .suggestions button {
       font-size: 0.75rem;
-      padding: 5px 10px;
+      padding: 4px 10px;
       background: transparent;
       border: 1px dashed var(--border);
     }
@@ -275,30 +371,6 @@
       border-style: solid;
       border-color: var(--accent);
       color: var(--accent);
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
-      background: var(--surface2);
-      padding: 4px;
-      border-radius: 10px;
-      width: fit-content;
-    }
-    .tab {
-      padding: 7px 16px;
-      border-radius: 7px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .tab.active {
-      background: var(--accent);
-      color: #fff;
     }
 
     .empty {
@@ -312,113 +384,177 @@
       font-size: 0.8rem;
       color: var(--muted);
     }
-    .loading {
-      opacity: 0.6;
-      pointer-events: none;
-    }
+    .loading { opacity: 0.6; pointer-events: none; }
   </style>
 </head>
 <body>
   <div class="app" id="app">
     <header>
       <div>
-        <h1>⏱ <span>OT</span> Hours Dashboard</h1>
+        <h1>⏱ <span>OT</span> Hours & Analytics Dashboard</h1>
         <div class="status" id="status">
           <span class="dot"></span>
-          <span id="statusText">Loading data…</span>
+          <span id="statusText">Connecting to Google Sheets…</span>
         </div>
       </div>
       <div class="header-actions">
         <button onclick="loadData()" id="refreshBtn">↻ Refresh</button>
-        <button class="primary" onclick="exportCSV()">↓ Export CSV</button>
+        <button class="primary" onclick="exportCSV()">↓ Export Filtered CSV</button>
       </div>
     </header>
 
     <!-- Summary Cards -->
-    <div class="cards" id="cards">
+    <div class="cards">
       <div class="card highlight">
         <div class="label">Total OT Hours</div>
         <div class="value" id="totalOT">—</div>
         <div class="sub" id="totalOTSub">across all records</div>
       </div>
       <div class="card">
-        <div class="label">Records</div>
+        <div class="label">Total Entries</div>
         <div class="value" id="totalRecords">—</div>
-        <div class="sub">OT entries logged</div>
+        <div class="sub">logged shifts</div>
       </div>
       <div class="card amber">
         <div class="label">Average OT / Entry</div>
         <div class="value" id="avgOT">—</div>
-        <div class="sub">hours per row</div>
+        <div class="sub">average per record</div>
       </div>
       <div class="card">
         <div class="label">Highest Single OT</div>
         <div class="value" id="maxOT">—</div>
         <div class="sub" id="maxOTSub">—</div>
       </div>
+      <div class="card purple">
+        <div class="label">Estimated OT Pay</div>
+        <div class="value" id="cardEstimatedPay">₹0</div>
+        <div class="sub">based on your settings</div>
+      </div>
       <div class="card">
         <div class="label">Zero OT Entries</div>
         <div class="value" id="zeroOT">—</div>
-        <div class="sub">no overtime</div>
+        <div class="sub">standard shifts</div>
       </div>
     </div>
 
-    <!-- Charts + Chat -->
+    <!-- Salary & Payout Calculator -->
+    <div class="panel" style="margin-bottom: 24px;">
+      <h2><span class="icon">💰</span> OT Salary Calculator (Configurable Rules)</h2>
+      <div class="calc-grid">
+        <div class="form-group">
+          <label>Calculation Method</label>
+          <select id="calcMode" onchange="toggleCalcMode(); updateSalaryCalc();">
+            <option value="hourly">Direct Hourly Rate</option>
+            <option value="formula">Monthly Basic + Working Days</option>
+          </select>
+        </div>
+        <div class="form-group" id="groupHourlyRate">
+          <label>Hourly Rate (Currency / Hr)</label>
+          <input type="number" id="hourlyRateInput" value="250" step="10" oninput="updateSalaryCalc()" />
+        </div>
+        <div class="form-group" id="groupMonthlySalary" style="display:none;">
+          <label>Monthly Basic Pay</label>
+          <input type="number" id="monthlySalaryInput" value="30000" step="500" oninput="updateSalaryCalc()" />
+        </div>
+        <div class="form-group" id="groupWorkingDays" style="display:none;">
+          <label>Working Days / Month</label>
+          <input type="number" id="workingDaysInput" value="26" step="1" oninput="updateSalaryCalc()" />
+        </div>
+        <div class="form-group" id="groupShiftHours" style="display:none;">
+          <label>Shift Duration (Hours)</label>
+          <input type="number" id="shiftHoursInput" value="8" step="0.5" oninput="updateSalaryCalc()" />
+        </div>
+        <div class="form-group">
+          <label>OT Multiplier (e.g. 1.0x, 1.5x, 2.0x)</label>
+          <input type="number" id="otMultiplierInput" value="1.0" step="0.1" oninput="updateSalaryCalc()" />
+        </div>
+      </div>
+      <div class="payout-box">
+        <div>
+          <div class="payout-title">Total Calculated OT Payout</div>
+          <div class="sub" id="payoutFormulaDesc">Calculation: Total OT Hours × Rate × Multiplier</div>
+        </div>
+        <div class="payout-amount" id="payoutDisplay">₹0.00</div>
+      </div>
+    </div>
+
+    <!-- Analytics Charts (Row 1) -->
     <div class="grid-2">
       <div class="panel">
-        <h2><span class="icon">📊</span> OT by Month</h2>
+        <h2><span class="icon">📊</span> OT Hours by Month</h2>
         <div class="chart-wrap">
           <canvas id="monthChart"></canvas>
         </div>
       </div>
       <div class="panel">
-        <h2><span class="icon">📅</span> OT by Day</h2>
-        <div class="chart-wrap">
-          <canvas id="dayChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="panel">
-        <h2><span class="icon">🔄</span> OT by Shift</h2>
+        <h2><span class="icon">🔄</span> OT Distribution by Shift</h2>
         <div class="chart-wrap">
           <canvas id="shiftChart"></canvas>
         </div>
       </div>
+    </div>
+
+    <!-- Calendar View & Chatbot (Row 2) -->
+    <div class="grid-2">
+      <!-- Calendar View -->
+      <div class="panel">
+        <div class="cal-header">
+          <h2><span class="icon">📅</span> Monthly Overtime Calendar</h2>
+          <div style="display:flex; gap:8px;">
+            <button onclick="prevCalMonth()">‹</button>
+            <span id="calCurrentLabel" style="font-weight:600; font-size:0.95rem; align-self:center; min-width:110px; text-align:center;"></span>
+            <button onclick="nextCalMonth()">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="calWeekDays">
+          <div class="cal-day-label">Sun</div>
+          <div class="cal-day-label">Mon</div>
+          <div class="cal-day-label">Tue</div>
+          <div class="cal-day-label">Wed</div>
+          <div class="cal-day-label">Thu</div>
+          <div class="cal-day-label">Fri</div>
+          <div class="cal-day-label">Sat</div>
+        </div>
+        <div class="cal-grid" id="calGridCells" style="margin-top:6px;"></div>
+      </div>
+
+      <!-- Enhanced Chatbot -->
       <div class="panel chat-panel">
-        <h2><span class="icon">💬</span> Ask about your OT</h2>
+        <h2><span class="icon">💬</span> Overtime Assistant</h2>
         <div class="chat-messages" id="chatMessages"></div>
-        <div class="suggestions" id="suggestions">
-          <button onclick="ask('total ot hours')">Total OT?</button>
-          <button onclick="ask('highest ot')">Highest OT?</button>
-          <button onclick="ask('by month')">By month</button>
-          <button onclick="ask('by shift')">By shift</button>
-          <button onclick="ask('average ot')">Average?</button>
+        <div class="suggestions">
+          <button onclick="ask('total ot')">Total OT</button>
+          <button onclick="ask('highest ot')">Highest OT Record</button>
+          <button onclick="ask('ot by shift')">Shift Breakdown</button>
+          <button onclick="ask('who was incharge most')">Incharge Stats</button>
+          <button onclick="ask('how much is my payout')">Projected Pay</button>
         </div>
         <div class="chat-input-row">
-          <input type="text" id="chatInput" placeholder="e.g. How much OT in October?" onkeydown="if(event.key==='Enter')sendChat()" />
+          <input type="text" id="chatInput" placeholder="Ask anything (e.g. 'How much OT in October?' or 'Who was incharge for shift E?')" onkeydown="if(event.key==='Enter')sendChat()" />
           <button class="primary" onclick="sendChat()">Send</button>
         </div>
       </div>
     </div>
 
     <!-- Data Table -->
-    <div class="panel" style="margin-top:20px">
-      <h2><span class="icon">📋</span> All OT Records</h2>
+    <div class="panel">
+      <h2><span class="icon">📋</span> Detailed Records</h2>
       <div class="table-controls">
-        <input type="text" id="searchInput" placeholder="Search date, shift, incharge…" oninput="renderTable()" style="min-width:200px" />
+        <input type="text" id="searchInput" placeholder="Search date, shift, incharge, remarks…" oninput="renderTable()" style="min-width:240px" />
         <select id="shiftFilter" onchange="renderTable()">
           <option value="">All Shifts</option>
         </select>
         <select id="monthFilter" onchange="renderTable()">
           <option value="">All Months</option>
         </select>
+        <select id="inchargeFilter" onchange="renderTable()">
+          <option value="">All Incharges</option>
+        </select>
         <select id="sortBy" onchange="renderTable()">
-          <option value="date-desc">Date ↓</option>
-          <option value="date-asc">Date ↑</option>
-          <option value="ot-desc">OT Hours ↓</option>
-          <option value="ot-asc">OT Hours ↑</option>
+          <option value="date-desc">Date (Newest first)</option>
+          <option value="date-asc">Date (Oldest first)</option>
+          <option value="ot-desc">OT Hours (Highest first)</option>
+          <option value="ot-asc">OT Hours (Lowest first)</option>
         </select>
       </div>
       <div class="table-wrap">
@@ -431,56 +567,97 @@
               <th>Shift Timing</th>
               <th>Extended Till</th>
               <th>OT Hours</th>
-              <th>Incharge</th>
+              <th>Shift Incharge</th>
               <th>Remarks</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
         </table>
       </div>
-      <div id="tableEmpty" class="empty" style="display:none">No matching records</div>
+      <div id="tableEmpty" class="empty" style="display:none">No matching records found</div>
     </div>
 
     <div class="footer-note">
-      Data live from your Google Sheet · Auto-parses formats like 1H30M · Built for you ✨
+      Connected directly to Google Sheets CSV export · Auto-parses hours & minutes · Config stored locally
     </div>
   </div>
 
   <script>
-    // ========== CONFIG ==========
+    // ========== CONFIGURATION ==========
     const SHEET_ID = '105b0MSiCTohkNzUNm7W2KpAMTxwVDFbrd655e-J7G78';
-    const GID = '177642818'; // main OT sheet
+    const GID = '177642818';
     const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
 
     let rawData = [];
-    let monthChart, dayChart, shiftChart;
+    let monthChart = null;
+    let shiftChart = null;
+    let calendarDate = new Date();
 
-    // ========== UTILS ==========
+    // ========== INITIALIZATION & STORAGE ==========
+    function loadSavedSettings() {
+      const mode = localStorage.getItem('ot_calc_mode');
+      if (mode) document.getElementById('calcMode').value = mode;
+
+      const hourlyRate = localStorage.getItem('ot_hourly_rate');
+      if (hourlyRate) document.getElementById('hourlyRateInput').value = hourlyRate;
+
+      const monthlySalary = localStorage.getItem('ot_monthly_salary');
+      if (monthlySalary) document.getElementById('monthlySalaryInput').value = monthlySalary;
+
+      const workingDays = localStorage.getItem('ot_working_days');
+      if (workingDays) document.getElementById('workingDaysInput').value = workingDays;
+
+      const shiftHours = localStorage.getItem('ot_shift_hours');
+      if (shiftHours) document.getElementById('shiftHoursInput').value = shiftHours;
+
+      const multiplier = localStorage.getItem('ot_multiplier');
+      if (multiplier) document.getElementById('otMultiplierInput').value = multiplier;
+
+      toggleCalcMode();
+    }
+
+    function toggleCalcMode() {
+      const mode = document.getElementById('calcMode').value;
+      const isHourly = mode === 'hourly';
+      document.getElementById('groupHourlyRate').style.display = isHourly ? 'flex' : 'none';
+      document.getElementById('groupMonthlySalary').style.display = isHourly ? 'none' : 'flex';
+      document.getElementById('groupWorkingDays').style.display = isHourly ? 'none' : 'flex';
+      document.getElementById('groupShiftHours').style.display = isHourly ? 'none' : 'flex';
+    }
+
+    // ========== PARSING UTILITIES ==========
     function parseOT(str) {
       if (!str || typeof str !== 'string') return 0;
-      str = str.trim().toUpperCase();
-      // Formats: 1H30M, 9H30M, 0H0M, 2.5, 2:30, etc.
-      let h = 0, m = 0;
-      const hm = str.match(/(\d+)\s*H(?:OURS?)?\s*(\d+)\s*M(?:INS?)?/i);
+      const clean = str.trim().toUpperCase();
+
+      // Format: 1H30M, 9H30M, 0H0M, 1 HOUR 30 MINS
+      const hm = clean.match(/(\d+)\s*H(?:OURS?)?\s*(\d+)\s*M(?:INS?)?/i);
       if (hm) {
-        h = parseInt(hm[1], 10);
-        m = parseInt(hm[2], 10);
-      } else {
-        const onlyH = str.match(/(\d+(?:\.\d+)?)\s*H(?:OURS?)?/i);
-        const onlyM = str.match(/(\d+)\s*M(?:INS?)?/i);
-        if (onlyH) h = parseFloat(onlyH[1]);
-        if (onlyM) m = parseInt(onlyM[1], 10);
-        if (!onlyH && !onlyM) {
-          // try decimal or plain number
-          const num = parseFloat(str);
-          if (!isNaN(num)) return num;
-        }
+        return +(parseInt(hm[1], 10) + parseInt(hm[2], 10) / 60).toFixed(2);
       }
-      return +(h + m / 60).toFixed(2);
+
+      // Format: 1H or 30M alone
+      const onlyH = clean.match(/^(\d+(?:\.\d+)?)\s*H(?:OURS?)?$/i);
+      if (onlyH) return +parseFloat(onlyH[1]).toFixed(2);
+
+      const onlyM = clean.match(/^(\d+)\s*M(?:INS?)?$/i);
+      if (onlyM) return +(parseInt(onlyM[1], 10) / 60).toFixed(2);
+
+      // Colon format (e.g. "01:30" or "9:30")
+      const colon = clean.match(/^(\d+):(\d{2})$/);
+      if (colon) {
+        return +(parseInt(colon[1], 10) + parseInt(colon[2], 10) / 60).toFixed(2);
+      }
+
+      // Plain number or float
+      const num = parseFloat(clean);
+      if (!isNaN(num)) return +num.toFixed(2);
+
+      return 0;
     }
 
     function formatHours(n) {
-      if (n === 0) return '0h';
+      if (n === null || n === undefined || isNaN(n) || n === 0) return '0h';
       const h = Math.floor(n);
       const m = Math.round((n - h) * 60);
       if (m === 0) return `${h}h`;
@@ -490,14 +667,29 @@
 
     function parseDate(val) {
       if (!val) return null;
-      // Handle Google Date(2026,9,10) or "10-Oct-2026" or ISO
-      if (typeof val === 'string' && val.startsWith('Date(')) {
-        const m = val.match(/Date\((\d+),(\d+),(\d+)/);
-        if (m) return new Date(+m[1], +m[2], +m[3]);
+      val = String(val).trim();
+
+      // Google Sheets format: Date(2026,9,10) (0-indexed month)
+      if (val.startsWith('Date(')) {
+        const m = val.match(/Date\((\d+),(\d+),(\d+)\)/);
+        if (m) return new Date(parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10));
       }
-      // "10-Oct-2026"
-      const d = new Date(val);
-      if (!isNaN(d)) return d;
+
+      // Format: DD-MMM-YYYY or DD/MM/YYYY
+      const parts = val.split(/[-/]/);
+      if (parts.length === 3) {
+        const months = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+        const monKey = parts[1].toLowerCase().slice(0, 3);
+        if (months[monKey] !== undefined) {
+          const d = parseInt(parts[0], 10);
+          const y = parseInt(parts[2], 10);
+          if (!isNaN(d) && !isNaN(y)) return new Date(y, months[monKey], d);
+        }
+      }
+
+      // Standard ISO or default parse
+      const parsed = new Date(val);
+      if (!isNaN(parsed.getTime())) return parsed;
       return null;
     }
 
@@ -507,29 +699,60 @@
     }
 
     function dayKey(d) {
-      if (!d) return 'Unknown';
+      if (!d) return '—';
       return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
-    // ========== LOAD DATA ==========
+    // RFC-4180 Compliant CSV Parser
+    function parseCSV(text) {
+      const p = [];
+      let row = [''];
+      let inQuote = false;
+      let i = 0;
+      while (i < text.length) {
+        const c = text[i];
+        const next = text[i + 1];
+        if (c === '"') {
+          if (inQuote && next === '"') {
+            row[row.length - 1] += '"';
+            i += 2;
+            continue;
+          }
+          inQuote = !inQuote;
+        } else if (c === ',' && !inQuote) {
+          row.push('');
+        } else if ((c === '\r' || c === '\n') && !inQuote) {
+          if (c === '\r' && next === '\n') i++;
+          p.push(row);
+          row = [''];
+        } else {
+          row[row.length - 1] += c;
+        }
+        i++;
+      }
+      if (row.length > 1 || row[0] !== '') p.push(row);
+      return p;
+    }
+
+    // ========== DATA FETCHING ==========
     async function loadData() {
       const app = document.getElementById('app');
       app.classList.add('loading');
-      document.getElementById('statusText').textContent = 'Refreshing…';
+      document.getElementById('statusText').textContent = 'Fetching Google Sheet…';
 
       try {
         const res = await fetch(CSV_URL + '&_=' + Date.now());
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const text = await res.text();
         const rows = parseCSV(text);
-        if (rows.length < 2) throw new Error('No data rows found');
+        if (rows.length < 2) throw new Error('CSV is empty or missing headers');
 
-        const headers = rows[0].map(h => h.replace(/^"|"$/g, '').trim());
+        const headers = rows[0].map(h => h.trim());
         rawData = rows.slice(1).map((row, idx) => {
           const obj = {};
           headers.forEach((h, i) => {
-            obj[h] = (row[i] || '').replace(/^"|"$/g, '').trim();
+            obj[h] = (row[i] || '').trim();
           });
-          // normalize keys
           obj._sno = obj['S.No'] || obj['Sno'] || (idx + 1);
           obj._date = parseDate(obj['Date']);
           obj._dateStr = obj._date ? dayKey(obj._date) : (obj['Date'] || '—');
@@ -538,61 +761,54 @@
           obj._timing = obj['Shift Timing'] || '—';
           obj._extended = obj['Extended Till'] || '—';
           obj._incharge = obj['Shift Incharge'] || '—';
-          obj._remarks = obj['Remarks (optional)'] || '';
+          obj._remarks = obj['Remarks (optional)'] || obj['Remarks'] || '';
           return obj;
-        }).filter(r => r._date || r['Date']); // keep valid-ish rows
+        }).filter(r => r._date || r['Date']);
 
         document.getElementById('statusText').textContent =
-          `Updated · ${rawData.length} records · ${new Date().toLocaleTimeString()}`;
+          `Live · ${rawData.length} entries synced · ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+
+        // Initialize calendar to the most recent record's month
+        const validDates = rawData.map(r => r._date).filter(Boolean);
+        if (validDates.length) {
+          const latest = new Date(Math.max(...validDates));
+          calendarDate = new Date(latest.getFullYear(), latest.getMonth(), 1);
+        }
+
         renderAll();
       } catch (err) {
-        console.error(err);
-        document.getElementById('statusText').textContent = 'Failed to load – using last data or check sharing';
-        // fallback sample if empty
+        console.error('Fetch error:', err);
+        document.getElementById('statusText').textContent = 'Failed to fetch live sheet; loaded offline records.';
         if (rawData.length === 0) {
           rawData = getFallbackData();
-          renderAll();
         }
+        renderAll();
       } finally {
         app.classList.remove('loading');
       }
     }
 
-    function parseCSV(text) {
-      const lines = text.trim().split(/\r?\n/);
-      return lines.map(line => {
-        const result = [];
-        let cur = '', inQ = false;
-        for (let i = 0; i < line.length; i++) {
-          const c = line[i];
-          if (c === '"') inQ = !inQ;
-          else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
-          else cur += c;
-        }
-        result.push(cur);
-        return result;
-      });
-    }
-
     function getFallbackData() {
-      // current known data as of last fetch
       return [
         { _sno:1, _date:new Date(2026,9,10), _dateStr:'10 Oct 2026', _ot:1.5, _shift:'G', _timing:'0828 - 1658', _extended:'0828 - 1828', _incharge:'Renjith PR', _remarks:'', 'OT Hours':'1H30M' },
         { _sno:2, _date:new Date(2026,9,10), _dateStr:'10 Oct 2026', _ot:9.5, _shift:'E', _timing:'1828 - 0258', _extended:'1828 - 1228', _incharge:'Sujith', _remarks:'', 'OT Hours':'9H30M' },
-        { _sno:3, _date:new Date(2026,9,10), _dateStr:'10 Oct 2026', _ot:0, _shift:'A', _timing:'1830 - 0300', _extended:'1830 - 1830', _incharge:'Renjith PR', _remarks:'Good morning✨', 'OT Hours':'0H0M' },
-        { _sno:4, _date:new Date(2026,9,10), _dateStr:'10 Oct 2026', _ot:0, _shift:'A', _timing:'1830 - 0300', _extended:'1830 - 1830', _incharge:'Renjith PR', _remarks:'Good morning✨', 'OT Hours':'0H0M' },
+        { _sno:3, _date:new Date(2026,9,10), _dateStr:'10 Oct 2026', _ot:0.0, _shift:'A', _timing:'1830 - 0300', _extended:'1830 - 1830', _incharge:'Renjith PR', _remarks:'Good morning✨', 'OT Hours':'0H0M' },
+        { _sno:4, _date:new Date(2026,9,10), _dateStr:'10 Oct 2026', _ot:0.0, _shift:'A', _timing:'1830 - 0300', _extended:'1830 - 1830', _incharge:'Renjith PR', _remarks:'Good morning✨', 'OT Hours':'0H0M' },
         { _sno:5, _date:new Date(2026,9,10), _dateStr:'10 Oct 2026', _ot:1.5, _shift:'G', _timing:'0831 - 1701', _extended:'0831 - 1831', _incharge:'Bestin, Renjith P', _remarks:'', 'OT Hours':'1H30M' },
       ];
     }
 
-    // ========== RENDER ==========
+    // ========== RENDERING ==========
     function renderAll() {
       renderCards();
       renderCharts();
       populateFilters();
+      renderCalendar();
+      updateSalaryCalc();
       renderTable();
+
       if (document.getElementById('chatMessages').children.length === 0) {
-        addBotMsg("Hi! I can answer questions about your OT data. Try: “total OT”, “highest OT”, “OT by month”, or “how much OT on 10 Oct”.");
+        addBotMsg("Hello! I'm your Overtime Assistant. Ask me about your OT hours, shifts, monthly totals, or projected salary.");
       }
     }
 
@@ -600,15 +816,15 @@
       const total = rawData.reduce((s, r) => s + r._ot, 0);
       const count = rawData.length;
       const avg = count ? total / count : 0;
-      const maxRow = rawData.reduce((a, b) => (b._ot > (a?._ot||0) ? b : a), null);
+      const maxRow = rawData.reduce((a, b) => (b._ot > (a?._ot || 0) ? b : a), null);
       const zeros = rawData.filter(r => r._ot === 0).length;
 
       document.getElementById('totalOT').textContent = formatHours(total);
-      document.getElementById('totalOTSub').textContent = `${total.toFixed(2)} hours total`;
+      document.getElementById('totalOTSub').textContent = `${total.toFixed(2)} total decimal hrs`;
       document.getElementById('totalRecords').textContent = count;
       document.getElementById('avgOT').textContent = formatHours(avg);
       document.getElementById('maxOT').textContent = maxRow ? formatHours(maxRow._ot) : '—';
-      document.getElementById('maxOTSub').textContent = maxRow ? `${maxRow._dateStr} · Shift ${maxRow._shift}` : '—';
+      document.getElementById('maxOTSub').textContent = maxRow ? `${maxRow._dateStr} (Shift ${maxRow._shift})` : '—';
       document.getElementById('zeroOT').textContent = zeros;
     }
 
@@ -623,7 +839,6 @@
 
     function renderCharts() {
       const byMonth = aggregate(r => monthKey(r._date));
-      const byDay = aggregate(r => r._dateStr);
       const byShift = aggregate(r => r._shift);
 
       const chartOpts = {
@@ -633,27 +848,24 @@
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: ctx => formatHours(ctx.raw)
+              label: ctx => `OT: ${formatHours(ctx.raw)} (${ctx.raw.toFixed(2)} hrs)`
             }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
-            ticks: {
-              color: '#8b9bb4',
-              callback: v => formatHours(v)
-            },
-            grid: { color: 'rgba(45,58,79,0.6)' }
+            ticks: { color: '#8b9bb4', callback: v => formatHours(v) },
+            grid: { color: 'rgba(45,58,79,0.5)' }
           },
           x: {
-            ticks: { color: '#8b9bb4', maxRotation: 45 },
+            ticks: { color: '#8b9bb4' },
             grid: { display: false }
           }
         }
       };
 
-      // Month
+      // Month Chart
       if (monthChart) monthChart.destroy();
       monthChart = new Chart(document.getElementById('monthChart'), {
         type: 'bar',
@@ -663,50 +875,35 @@
             data: Object.values(byMonth),
             backgroundColor: '#3b82f6',
             borderRadius: 6,
-            barPercentage: 0.6
+            barPercentage: 0.55
           }]
         },
         options: chartOpts
       });
 
-      // Day
-      if (dayChart) dayChart.destroy();
-      dayChart = new Chart(document.getElementById('dayChart'), {
-        type: 'bar',
-        data: {
-          labels: Object.keys(byDay),
-          datasets: [{
-            data: Object.values(byDay),
-            backgroundColor: '#22c55e',
-            borderRadius: 6,
-            barPercentage: 0.6
-          }]
-        },
-        options: chartOpts
-      });
-
-      // Shift
+      // Shift Doughnut Chart
       if (shiftChart) shiftChart.destroy();
       const shiftLabels = Object.keys(byShift);
-      const shiftColors = ['#3b82f6','#22c55e','#f59e0b','#a855f7','#ef4444','#06b6d4'];
+      const shiftColors = ['#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#06b6d4', '#ec4899', '#f97316'];
       shiftChart = new Chart(document.getElementById('shiftChart'), {
         type: 'doughnut',
         data: {
           labels: shiftLabels,
           datasets: [{
             data: Object.values(byShift),
-            backgroundColor: shiftLabels.map((_,i) => shiftColors[i % shiftColors.length]),
-            borderWidth: 0
+            backgroundColor: shiftLabels.map((_, i) => shiftColors[i % shiftColors.length]),
+            borderWidth: 2,
+            borderColor: '#1a2332'
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'right', labels: { color: '#e7ecf3', boxWidth: 12 } },
+            legend: { position: 'right', labels: { color: '#e7ecf3', boxWidth: 12, padding: 12 } },
             tooltip: {
               callbacks: {
-                label: ctx => `${ctx.label}: ${formatHours(ctx.raw)}`
+                label: ctx => `Shift ${ctx.label}: ${formatHours(ctx.raw)} (${ctx.raw.toFixed(2)} hrs)`
               }
             }
           }
@@ -714,51 +911,173 @@
       });
     }
 
-    function populateFilters() {
-      const shifts = [...new Set(rawData.map(r => r._shift))].sort();
-      const months = [...new Set(rawData.map(r => monthKey(r._date)))].sort();
-      const sf = document.getElementById('shiftFilter');
-      const mf = document.getElementById('monthFilter');
-      sf.innerHTML = '<option value="">All Shifts</option>' + shifts.map(s => `<option value="${s}">${s}</option>`).join('');
-      mf.innerHTML = '<option value="">All Months</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
+    // ========== SALARY CALCULATOR ==========
+    function updateSalaryCalc() {
+      const mode = document.getElementById('calcMode').value;
+      const multiplier = parseFloat(document.getElementById('otMultiplierInput').value) || 1.0;
+      const totalOT = rawData.reduce((s, r) => s + r._ot, 0);
+
+      localStorage.setItem('ot_calc_mode', mode);
+      localStorage.setItem('ot_multiplier', multiplier);
+
+      let effectiveHourlyRate = 0;
+      let formulaDesc = '';
+
+      if (mode === 'hourly') {
+        const hourlyRate = parseFloat(document.getElementById('hourlyRateInput').value) || 0;
+        localStorage.setItem('ot_hourly_rate', hourlyRate);
+        effectiveHourlyRate = hourlyRate;
+        formulaDesc = `Total OT (${totalOT.toFixed(2)}h) × Rate (₹${hourlyRate}/h) × Multiplier (${multiplier}x)`;
+      } else {
+        const monthly = parseFloat(document.getElementById('monthlySalaryInput').value) || 0;
+        const days = parseFloat(document.getElementById('workingDaysInput').value) || 26;
+        const shiftHrs = parseFloat(document.getElementById('shiftHoursInput').value) || 8;
+
+        localStorage.setItem('ot_monthly_salary', monthly);
+        localStorage.setItem('ot_working_days', days);
+        localStorage.setItem('ot_shift_hours', shiftHrs);
+
+        if (days > 0 && shiftHrs > 0) {
+          effectiveHourlyRate = (monthly / days) / shiftHrs;
+        }
+        formulaDesc = `Base Rate: (₹${monthly} ÷ ${days}d ÷ ${shiftHrs}h = ₹${effectiveHourlyRate.toFixed(2)}/h) × Multiplier (${multiplier}x)`;
+      }
+
+      const totalPay = totalOT * effectiveHourlyRate * multiplier;
+      const formatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalPay);
+
+      document.getElementById('payoutDisplay').textContent = formatted;
+      document.getElementById('cardEstimatedPay').textContent = formatted;
+      document.getElementById('payoutFormulaDesc').textContent = formulaDesc;
     }
 
-    function renderTable() {
-      const q = (document.getElementById('searchInput').value || '').toLowerCase();
+    // ========== CALENDAR VIEW ==========
+    function renderCalendar() {
+      const year = calendarDate.getFullYear();
+      const month = calendarDate.getMonth();
+      document.getElementById('calCurrentLabel').textContent =
+        calendarDate.toLocaleString('en', { month: 'long', year: 'numeric' });
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const lastDayDate = new Date(year, month + 1, 0).getDate();
+      const container = document.getElementById('calGridCells');
+      container.innerHTML = '';
+
+      // Blank cells for initial offset
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'cal-cell empty';
+        container.appendChild(emptyCell);
+      }
+
+      // Aggregate OT by day for current month
+      const dayMap = {};
+      rawData.forEach(r => {
+        if (r._date && r._date.getFullYear() === year && r._date.getMonth() === month) {
+          const dayNum = r._date.getDate();
+          if (!dayMap[dayNum]) dayMap[dayNum] = { ot: 0, shifts: [] };
+          dayMap[dayNum].ot += r._ot;
+          dayMap[dayNum].shifts.push(r._shift);
+        }
+      });
+
+      // Populate day cells
+      for (let day = 1; day <= lastDayDate; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell';
+        const data = dayMap[day];
+
+        let inner = `<div class="day-num">${day}</div>`;
+        if (data && data.ot > 0) {
+          cell.classList.add('has-ot');
+          inner += `<div class="ot-tag">+${formatHours(data.ot)}</div>`;
+          cell.title = `Shift(s): ${[...new Set(data.shifts)].join(', ')} | OT: ${formatHours(data.ot)}`;
+        }
+        cell.innerHTML = inner;
+
+        cell.onclick = () => {
+          const dateQuery = `${day} ${calendarDate.toLocaleString('en', { month: 'short' })}`;
+          document.getElementById('searchInput').value = dateQuery;
+          renderTable();
+        };
+
+        container.appendChild(cell);
+      }
+    }
+
+    function prevCalMonth() {
+      calendarDate.setMonth(calendarDate.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextCalMonth() {
+      calendarDate.setMonth(calendarDate.getMonth() + 1);
+      renderCalendar();
+    }
+
+    // ========== FILTERS & TABLE ==========
+    function populateFilters() {
+      const shifts = [...new Set(rawData.map(r => r._shift).filter(Boolean))].sort();
+      const months = [...new Set(rawData.map(r => monthKey(r._date)).filter(Boolean))].sort();
+      const incharges = [...new Set(rawData.map(r => r._incharge).filter(Boolean))].sort();
+
+      const sf = document.getElementById('shiftFilter');
+      const mf = document.getElementById('monthFilter');
+      const inf = document.getElementById('inchargeFilter');
+
+      sf.innerHTML = '<option value="">All Shifts</option>' + shifts.map(s => `<option value="${s}">${s}</option>`).join('');
+      mf.innerHTML = '<option value="">All Months</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
+      inf.innerHTML = '<option value="">All Incharges</option>' + incharges.map(i => `<option value="${i}">${i}</option>`).join('');
+    }
+
+    function getFilteredRows() {
+      const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
       const shiftF = document.getElementById('shiftFilter').value;
       const monthF = document.getElementById('monthFilter').value;
+      const inchargeF = document.getElementById('inchargeFilter').value;
       const sort = document.getElementById('sortBy').value;
 
       let filtered = rawData.filter(r => {
         if (shiftF && r._shift !== shiftF) return false;
         if (monthF && monthKey(r._date) !== monthF) return false;
+        if (inchargeF && r._incharge !== inchargeF) return false;
         if (q) {
-          const hay = [r._dateStr, r._shift, r._incharge, r._remarks, r._timing].join(' ').toLowerCase();
-          if (!hay.includes(q)) return false;
+          const haystack = [r._dateStr, r._shift, r._incharge, r._remarks, r._timing, r._extended].join(' ').toLowerCase();
+          if (!haystack.includes(q)) return false;
         }
         return true;
       });
 
       filtered.sort((a, b) => {
-        if (sort === 'date-desc') return (b._date||0) - (a._date||0);
-        if (sort === 'date-asc') return (a._date||0) - (b._date||0);
+        const timeA = a._date ? a._date.getTime() : 0;
+        const timeB = b._date ? b._date.getTime() : 0;
+        if (sort === 'date-desc') return timeB - timeA;
+        if (sort === 'date-asc') return timeA - timeB;
         if (sort === 'ot-desc') return b._ot - a._ot;
         if (sort === 'ot-asc') return a._ot - b._ot;
         return 0;
       });
 
+      return filtered;
+    }
+
+    function renderTable() {
+      const filtered = getFilteredRows();
       const tbody = document.getElementById('tableBody');
       const empty = document.getElementById('tableEmpty');
+
       if (filtered.length === 0) {
         tbody.innerHTML = '';
         empty.style.display = 'block';
         return;
       }
       empty.style.display = 'none';
+
       tbody.innerHTML = filtered.map(r => {
         let badgeClass = 'badge-ot';
         if (r._ot === 0) badgeClass = 'badge-zero';
         else if (r._ot >= 5) badgeClass = 'badge-high';
+
         return `<tr>
           <td>${r._sno}</td>
           <td>${r._dateStr}</td>
@@ -780,6 +1099,7 @@
       document.getElementById('chatMessages').appendChild(div);
       div.scrollIntoView({ behavior: 'smooth' });
     }
+
     function addUserMsg(text) {
       const div = document.createElement('div');
       div.className = 'msg user';
@@ -800,90 +1120,123 @@
       addUserMsg(q);
       input.value = '';
       setTimeout(() => {
-        addBotMsg(answer(q.toLowerCase()));
-      }, 300);
+        addBotMsg(generateAnswer(q.toLowerCase()));
+      }, 250);
     }
 
-    function answer(q) {
+    function generateAnswer(q) {
       const total = rawData.reduce((s, r) => s + r._ot, 0);
       const count = rawData.length;
       const avg = count ? total / count : 0;
       const byMonth = aggregate(r => monthKey(r._date));
       const byShift = aggregate(r => r._shift);
-      const byDay = aggregate(r => r._dateStr);
-      const maxRow = rawData.reduce((a, b) => (b._ot > (a?._ot||0) ? b : a), null);
-      const zeros = rawData.filter(r => r._ot === 0).length;
+      const maxRow = rawData.reduce((a, b) => (b._ot > (a?._ot || 0) ? b : a), null);
 
-      // Total
-      if (/total|sum|overall|how much ot/.test(q) && !/month|shift|day|average|avg|highest|max/.test(q)) {
-        return `📊 <b>Total OT hours</b>: <b>${formatHours(total)}</b> (${total.toFixed(2)} hrs) across <b>${count}</b> entries.`;
+      // Payout / Salary queries
+      if (/pay|salary|amount|earn|money|payout|rupee|inr/.test(q)) {
+        const payStr = document.getElementById('payoutDisplay').textContent;
+        return `💵 Based on your current calculator configuration, your estimated overtime payout is <b>${payStr}</b> for <b>${formatHours(total)}</b> of OT.`;
       }
-      // Average
+
+      // Total OT
+      if (/total|sum|overall|how much ot/.test(q) && !/shift|month|incharge/.test(q)) {
+        return `📊 <b>Total Overtime</b>: <b>${formatHours(total)}</b> (${total.toFixed(2)} decimal hours) across <b>${count}</b> logged records.`;
+      }
+
+      // Average OT
       if (/average|avg|mean/.test(q)) {
-        return `📈 Average OT per entry: <b>${formatHours(avg)}</b> (${avg.toFixed(2)} hours).`;
+        return `📈 Average Overtime per record: <b>${formatHours(avg)}</b> (${avg.toFixed(2)} hours).`;
       }
-      // Highest
-      if (/highest|max|most|top|peak/.test(q)) {
-        if (!maxRow) return 'No data yet.';
-        return `🔥 Highest single OT: <b>${formatHours(maxRow._ot)}</b> on <b>${maxRow._dateStr}</b> (Shift <b>${maxRow._shift}</b>, Incharge: ${maxRow._incharge}).`;
+
+      // Highest single record
+      if (/highest|max|most|peak|longest/.test(q)) {
+        if (!maxRow) return 'No records found.';
+        return `🔥 <b>Highest single OT</b>: <b>${formatHours(maxRow._ot)}</b> (${maxRow._ot} hrs) on <b>${maxRow._dateStr}</b> (Shift <b>${maxRow._shift}</b>, Incharge: <b>${maxRow._incharge}</b>).`;
       }
-      // By month
-      if (/month|monthly/.test(q)) {
-        const lines = Object.entries(byMonth)
-          .sort((a,b) => b[1]-a[1])
-          .map(([k,v]) => `• ${k}: <b>${formatHours(v)}</b>`)
-          .join('<br>');
-        return `📅 <b>OT by Month</b>:<br>${lines || 'No data'}`;
+
+      // Incharge query
+      if (/incharge|supervisor|lead|renjith|sujith|bestin/.test(q)) {
+        const inchargeMap = {};
+        rawData.forEach(r => {
+          if (r._incharge && r._incharge !== '—') {
+            inchargeMap[r._incharge] = (inchargeMap[r._incharge] || 0) + r._ot;
+          }
+        });
+        const sorted = Object.entries(inchargeMap).sort((a,b) => b[1] - a[1]);
+        if (!sorted.length) return 'No incharge data recorded.';
+        const list = sorted.map(([name, hrs]) => `• <b>${name}</b>: ${formatHours(hrs)}`).join('<br>');
+        return `👨‍💼 <b>OT Hours by Incharge</b>:<br>${list}`;
       }
-      // By shift
+
+      // Shift breakdown
       if (/shift/.test(q)) {
-        const lines = Object.entries(byShift)
-          .sort((a,b) => b[1]-a[1])
-          .map(([k,v]) => `• Shift ${k}: <b>${formatHours(v)}</b>`)
-          .join('<br>');
-        return `🔄 <b>OT by Shift</b>:<br>${lines || 'No data'}`;
-      }
-      // Zero
-      if (/zero|no ot|without/.test(q)) {
-        return `There are <b>${zeros}</b> entries with 0 OT hours.`;
-      }
-      // Specific date / day
-      const dayMatch = q.match(/(\d{1,2})\s*(oct|nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep)/i)
-        || q.match(/(oct|nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep)\s*(\d{1,2})/i);
-      if (dayMatch || /on \d|date|day/.test(q)) {
-        // try find matching days
-        const hits = Object.entries(byDay).filter(([k]) => k.toLowerCase().includes('oct') || /10/.test(k));
-        if (hits.length) {
-          return hits.map(([k,v]) => `On <b>${k}</b>: <b>${formatHours(v)}</b>`).join('<br>');
+        const specificShift = q.match(/shift\s*([a-z0-9])/i);
+        if (specificShift) {
+          const target = specificShift[1].toUpperCase();
+          const hrs = byShift[target] || 0;
+          return `🔄 Total OT logged in <b>Shift ${target}</b>: <b>${formatHours(hrs)}</b> (${hrs.toFixed(2)} hrs).`;
         }
-      }
-      // Count
-      if (/how many|count|entries|records/.test(q)) {
-        return `You have <b>${count}</b> OT records logged.`;
-      }
-      // Help
-      if (/help|what can|commands/.test(q)) {
-        return `You can ask me:<br>• Total OT hours<br>• Average OT<br>• Highest OT<br>• OT by month / by shift<br>• How many zero OT entries<br>• OT on a specific day`;
+        const lines = Object.entries(byShift).sort((a,b) => b[1] - a[1]).map(([k,v]) => `• Shift ${k}: <b>${formatHours(v)}</b>`).join('<br>');
+        return `🔄 <b>OT by Shift</b>:<br>${lines}`;
       }
 
-      return `I understood: “${q}”.<br><br>Try asking about <b>total</b>, <b>average</b>, <b>highest</b>, <b>by month</b>, <b>by shift</b>, or a specific date. Or click a suggestion above.`;
+      // Month breakdown
+      if (/month|monthly/.test(q)) {
+        const lines = Object.entries(byMonth).sort((a,b) => b[1] - a[1]).map(([k,v]) => `• ${k}: <b>${formatHours(v)}</b>`).join('<br>');
+        return `📅 <b>OT by Month</b>:<br>${lines || 'No monthly data available.'}`;
+      }
+
+      // Date lookup
+      const dayMatch = q.match(/(\d{1,2})\s*(oct|nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep)/i);
+      if (dayMatch) {
+        const targetDay = parseInt(dayMatch[1], 10);
+        const targetMonth = dayMatch[2].toLowerCase();
+        const matches = rawData.filter(r => {
+          if (!r._date) return false;
+          return r._date.getDate() === targetDay &&
+            r._date.toLocaleString('en', { month: 'short' }).toLowerCase() === targetMonth;
+        });
+        if (matches.length) {
+          const subTotal = matches.reduce((s, r) => s + r._ot, 0);
+          return `📅 On <b>${matches[0]._dateStr}</b>, you had <b>${matches.length}</b> entry(s) totaling <b>${formatHours(subTotal)}</b> of OT.`;
+        }
+        return `No overtime entries found for ${dayMatch[0]}.`;
+      }
+
+      return `I can help analyze your hours! Try asking:<br>• <i>"How much OT in Shift G?"</i><br>• <i>"Who was incharge during my highest OT?"</i><br>• <i>"What is my projected payout?"</i><br>• <i>"OT by month"</i>`;
     }
 
+    // ========== CSV EXPORT ==========
     function exportCSV() {
-      if (!rawData.length) return;
-      const headers = ['S.No','Date','Shift','Shift Timing','Extended Till','OT Hours (decimal)','OT Hours (original)','Shift Incharge','Remarks'];
-      const rows = rawData.map(r => [
-        r._sno, r._dateStr, r._shift, r._timing, r._extended, r._ot, r['OT Hours']||'', r._incharge, r._remarks
-      ]);
-      const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `ot-hours-${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
+      const rows = getFilteredRows();
+      if (!rows.length) {
+        alert('No rows matching your criteria to export.');
+        return;
+      }
+      const headers = ['S.No', 'Date', 'Shift', 'Shift Timing', 'Extended Till', 'OT Hours (Decimal)', 'Shift Incharge', 'Remarks'];
+      const csvData = [
+        headers.join(','),
+        ...rows.map(r => [
+          r._sno,
+          `"${r._dateStr}"`,
+          `"${r._shift}"`,
+          `"${r._timing}"`,
+          `"${r._extended}"`,
+          r._ot,
+          `"${r._incharge}"`,
+          `"${(r._remarks || '').replace(/"/g, '""')}"`
+        ].join(','))
+      ].join('\r\n');
+
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `OT_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
     }
 
-    // Boot
+    // Run on startup
+    loadSavedSettings();
     loadData();
   </script>
 </body>
