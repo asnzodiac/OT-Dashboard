@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aswin's OT Dashboard</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--fg:#1b2333;--mut:#6b7590;--ac:#4f6df5;--ac2:#18b394;--bd:#e2e7f1;--warn:#e8a317;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1320;--card:#171e30;--fg:#e7ebf6;--mut:#8a95b3;--ac:#7b92ff;--ac2:#3fd3b4;--bd:#273049}}
+:root[data-theme="dark"]{--bg:#0e1320;--card:#171e30;--fg:#e7ebf6;--mut:#8a95b3;--ac:#7b92ff;--ac2:#3fd3b4;--bd:#273049}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif}
+header{padding:18px 16px 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+h1{margin:0;font-size:21px}.sub{color:var(--mut);font-size:12.5px;margin-top:2px}
+button,select,input{font:inherit;color:var(--fg)}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:8px 13px;cursor:pointer}
+.btn.ghost{background:var(--card);color:var(--fg);border:1px solid var(--bd)}
+nav{display:flex;gap:6px;padding:6px 16px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;overflow-x:auto}
+nav button{flex:1;white-space:nowrap;background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:8px 14px;cursor:pointer}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{padding:8px 16px 40px;max-width:960px;margin:auto}
+.banner{background:color-mix(in srgb,var(--warn) 18%,var(--card));border:1px solid var(--warn);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:13px}
+.bar{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+select,input[type=search],.chat input{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 10px}
+input[type=search]{flex:1;min-width:140px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px}
+.kpi b{display:block;font-size:24px;margin-top:2px}.kpi span{color:var(--mut);font-size:12px}
+.card h3{margin:0 0 10px;font-size:14px;color:var(--mut);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px}
+.row{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:13px}.row i{width:70px;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row div{flex:1;background:var(--bd);border-radius:6px;height:12px;overflow:hidden}.row div u{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:6px}
+.row em{width:64px;text-align:right;font-style:normal;color:var(--mut)}
+.wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:14px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
+th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--bd)}
+th{color:var(--mut);font-weight:600;cursor:pointer;position:sticky;top:0;background:var(--card)}
+.pill{background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border-radius:999px;padding:2px 9px;font-weight:600}
+.chat{display:flex;flex-direction:column;gap:8px}
+.msgs{display:flex;flex-direction:column;gap:8px;min-height:240px}
+.m{padding:9px 12px;border-radius:14px;max-width:88%;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--ac);color:#fff}.m.a{align-self:flex-start;background:var(--card);border:1px solid var(--bd)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:6px 11px;font-size:12.5px;cursor:pointer}
+.send{display:flex;gap:8px}.send input{flex:1}
+.empty{color:var(--mut);text-align:center;padding:24px}
+</style></head><body>
+<header><div><h1>⏱ OT &amp; Escort Dashboard</h1><div class="sub" id="status">Starting…</div></div>
+<button class="btn ghost" id="refresh">↻ Refresh</button></header>
+<nav id="nav"></nav>
+<main><div id="banner"></div><div id="view"></div></main>
+<script>
+const SID="105b0MSiCTohkNzUNm7W2KpAMTxwVDFbrd655e-J7G78";
+const S={ot:[],esc:[],demo:false,tab:"dash",month:"all",q:"",sort:{},chat:[]};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const mins=t=>{const m=/(\d+)\s*H\s*(\d+)\s*M/i.exec(t||"");return m?+m[1]*60+ +m[2]:0};
+const hm=m=>Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m";
+function pdate(s){const m=/(\d{1,2})-(\w{3})-(\d{4})/.exec(s||"");if(m)return new Date(+m[3],MN.indexOf(m[2]),+m[1]);const d=new Date(s);return isNaN(d)?null:d}
+const mkey=d=>d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"):"?";
+const mlabel=k=>{const[y,m]=k.split("-");return MN[+m-1]+" "+y};
+function toOT(r){const d=pdate(r[1]);return{sno:r[0],date:r[1],d,shift:r[2]||"",timing:r[3]||"",ext:r[4]||"",ot:r[5]||"",min:mins(r[5]),inc:r[6]||"",rem:r[7]||"",key:mkey(d)}}
+function toEsc(r){const d=pdate(r[1]);return{sno:r[0],date:r[1],d,shift:r[2]||"",flight:r[3]||"",inc:r[4]||"",rem:r[5]||"",key:mkey(d)}}
+function demo(){const sh=["M","B1","B2","G","A","E","N"],nm=["Niyas","Sajra","Bestin","Yazeen","Alex"],ot=[],es=[];
+for(let i=0;i<26;i++){const d=new Date(2026,5+Math.floor(i/9),2+(i%9)*3),m=(i*47%140)+10,ds=d.getDate()+"-"+MN[d.getMonth()]+"-"+d.getFullYear();
+ot.push(toOT([i+1,ds,sh[i%7],"0800 - 1630","0800 - "+(1630+Math.floor(m/60)*100+m%60),Math.floor(m/60)+"H"+m%60+"M",nm[i%5],i%4?"":"Late arrival"]));
+es.push(toEsc([i+1,ds,sh[(i+2)%7],["EK"+(500+i),"QR"+(300+i),"AI"+(900+i)][i%3],nm[(i+1)%5],""]))}
+S.ot=ot;S.esc=es}
+function status(t){$("#status").textContent=t}
+async function load(refresh){
+ status("Syncing with Google Sheets…");$("#banner").innerHTML="";
+ try{
+  const mcp=await claude.use("mcp");if(!mcp)throw{code:"unavailable"};
+  const get=async r=>{const x=await mcp.callTool("Google Sheets","get_values",{spreadsheetId:SID,range:r},refresh?{cache:{refresh:true}}:undefined);
+   let p=x.payload;if(typeof p==="string")p=JSON.parse(p);return{v:p.values||[],t:x.cache?.storedAt}};
+  const[a,b]=await Promise.all([get("'Aswin''s OT Sheet'!A1:H2000"),get("'Catering Escort Log'!A1:F2000")]);
+  S.ot=a.v.slice(1).filter(r=>r[1]).map(toOT);S.esc=b.v.slice(1).filter(r=>r[1]).map(toEsc);S.demo=false;
+  status("Live · "+S.ot.length+" OT entries · "+S.esc.length+" escorts · "+new Date(a.t||Date.now()).toLocaleTimeString());
+ }catch(e){
+  demo();S.demo=true;status("Demo data (not connected)");
+  const msg={needs_reauth:"Your Google Sheets connection expired. Reconnect it in claude.ai settings.",server_not_connected:"Google Sheets isn't connected. Add the Google Sheets connector in claude.ai.",unavailable:"Live data isn't available in this view.",approval_required:"Approve the Google Sheets access prompt, then tap Refresh.",server_unavailable:"Google Sheets didn't respond. Tap Refresh to retry."}[e.code]||"Couldn't read the sheet ("+esc(e.code||e.message||"error")+").";
+  $("#banner").innerHTML='<div class="banner"><b>Showing demo data.</b> '+msg+'</div>';
+ }
+ render()}
+const months=()=>[...new Set(S.ot.concat(S.esc).map(r=>r.key))].filter(k=>k!="?").sort();
+const fl=a=>S.month=="all"?a:a.filter(r=>r.key==S.month);
+function bars(map,fmt){const e=Object.entries(map).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...e.map(x=>x[1]));
+ return e.length?e.map(([k,v])=>`<div class="row"><i title="${esc(k)}">${esc(k)}</i><div><u style="width:${v/mx*100}%"></u></div><em>${fmt(v)}</em></div>`).join(""):'<div class="empty">No data</div>'}
+function monthChart(){const mk={};S.ot.forEach(r=>mk[r.key]=(mk[r.key]||0)+r.min);const ks=Object.keys(mk).filter(k=>k!="?").sort();
+ if(!ks.length)return'<div class="empty">No data</div>';const mx=Math.max(1,...ks.map(k=>mk[k])),w=60,H=150;
+ return`<svg viewBox="0 0 ${ks.length*w+10} ${H+34}" style="width:100%;max-height:230px">`+ks.map((k,i)=>{const h=mk[k]/mx*H;return`<rect x="${i*w+12}" y="${H-h+8}" width="38" height="${h}" rx="7" fill="var(--ac)" opacity=".9"/><text x="${i*w+31}" y="${H-h+2}" text-anchor="middle" font-size="10" fill="var(--fg)">${hm(mk[k])}</text><text x="${i*w+31}" y="${H+24}" text-anchor="middle" font-size="10" fill="var(--mut)">${mlabel(k)}</text>`}).join("")+"</svg>"}
+function dash(){const o=fl(S.ot),e=fl(S.esc),tot=o.reduce((s,r)=>s+r.min,0),mx=o.reduce((a,r)=>r.min>a.min?r:a,{min:0});
+ const sh={},ic={};o.forEach(r=>{sh[r.shift]=(sh[r.shift]||0)+r.min;r.inc.split(",").map(x=>x.trim()).filter(Boolean).forEach(n=>ic[n]=(ic[n]||0)+1)});
+ const ef={};e.forEach(r=>ef[r.shift]=(ef[r.shift]||0)+1);
+ return`<div class="kpis"><div class="card kpi"><span>Total OT</span><b>${hm(tot)}</b></div><div class="card kpi"><span>OT entries</span><b>${o.length}</b></div><div class="card kpi"><span>Avg / entry</span><b>${o.length?hm(Math.round(tot/o.length)):"–"}</b></div><div class="card kpi"><span>Longest OT</span><b>${mx.min?hm(mx.min):"–"}</b></div><div class="card kpi"><span>Escort flights</span><b>${e.length}</b></div></div>
+ <div class="card"><h3>OT hours by month</h3>${monthChart()}</div>
+ <div class="grid"><div class="card"><h3>OT by shift</h3>${bars(sh,hm)}</div><div class="card"><h3>Escorts by shift</h3>${bars(ef,v=>v)}</div><div class="card"><h3>Shift incharge (OT entries)</h3>${bars(ic,v=>v)}</div></div>`}
+function table(kind){const rows=fl(S[kind]),cols=kind=="ot"?[["sno","S.No"],["date","Date"],["shift","Shift"],["timing","Shift Timing"],["ext","Extended Till"],["ot","OT Hours"],["inc","Incharge"],["rem","Remarks"]]:[["sno","Sno"],["date","Date"],["shift","Shift"],["flight","Flight"],["inc","Incharge"],["rem","Remarks"]];
+ const q=S.q.toLowerCase();let r=rows.filter(x=>!q||JSON.stringify(x).toLowerCase().includes(q));const s=S.sort[kind];
+ if(s)r=[...r].sort((a,b)=>{let x=s.k=="date"?a.d:s.k=="ot"?a.min:a[s.k],y=s.k=="date"?b.d:s.k=="ot"?b.min:b[s.k];return(x>y?1:x<y?-1:0)*s.dir});
+ return`<div class="bar"><input type="search" id="q" placeholder="Search…" value="${esc(S.q)}"></div><div class="wrap"><table><thead><tr>${cols.map(c=>`<th data-k="${c[0]}" data-t="${kind}">${c[1]}${s&&s.k==c[0]?(s.dir>0?" ▲":" ▼"):""}</th>`).join("")}</tr></thead><tbody>${r.map(x=>"<tr>"+cols.map(c=>`<td>${c[0]=="ot"?'<span class="pill">'+esc(x.ot)+"</span>":esc(x[c[0]])}</td>`).join("")+"</tr>").join("")||`<tr><td colspan="9" class="empty">No rows</td></tr>`}</tbody></table></div>`}
+function chatView(){return`<div class="chat card"><div class="chips">${["How much OT in total?","Which month had the most OT?","Which shift gives me the most OT?","Who is incharge most often?","Any pattern in my escorts?"].map(t=>`<button data-ask="${esc(t)}">${esc(t)}</button>`).join("")}</div><div class="msgs" id="msgs">${S.chat.map(m=>`<div class="m ${m.role=="user"?"u":"a"}">${esc(m.content)}</div>`).join("")||'<div class="empty">Ask anything about your OT or escort sheets.</div>'}</div><div class="send"><input id="ask" placeholder="Ask about your data…"><button class="btn" id="go">Send</button></div></div>`}
+function render(){
+ $("#nav").innerHTML=[["dash","Dashboard"],["ot","OT Sheet"],["esc","Escort Log"],["chat","Ask AI"]].map(t=>`<button data-t="${t[0]}" class="${S.tab==t[0]?"on":""}">${t[1]}</button>`).join("");
+ const mo=S.tab!="chat"?`<div class="bar"><select id="mo"><option value="all">All months</option>${months().map(k=>`<option value="${k}" ${S.month==k?"selected":""}>${mlabel(k)}</option>`).join("")}</select></div>`:"";
+ $("#view").innerHTML=mo+(S.tab=="dash"?dash():S.tab=="chat"?chatView():table(S.tab));
+ if(S.tab=="chat"){const m=$("#msgs");m.scrollTop=m.scrollHeight}}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-ask]");if(!t)return;
+ if(t.tagName=="TH"){const k=t.dataset.k,c=S.sort[t.dataset.t];S.sort[t.dataset.t]={k,dir:c&&c.k==k?-c.dir:1};render()}
+ else if(t.dataset.ask)ask(t.dataset.ask);
+ else if(t.closest("nav")){S.tab=t.dataset.t;render()}});
+document.addEventListener("change",e=>{if(e.target.id=="mo"){S.month=e.target.value;render()}});
+document.addEventListener("input",e=>{if(e.target.id=="q"){S.q=e.target.value;const p=e.target.selectionStart;render();const i=$("#q");i.focus();i.setSelectionRange(p,p)}});
+document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="ask")ask()});
+document.addEventListener("click",e=>{if(e.target.id=="go")ask()});
+$("#refresh").onclick=()=>load(true);
+function ctx(){const mk={};S.ot.forEach(r=>mk[r.key]=(mk[r.key]||0)+r.min);
+ return"You are a data analyst inside Aswin's shift dashboard. Answer concisely from this data only. OT hours were calculated beyond an 8.5-hour shift. Say so if the data can't answer.\n"+(S.demo?"NOTE: this is demo data, not real.\n":"")+"OT rows [S.No,Date,Shift,Shift Timing,Extended Till,OT Hours,Incharge,Remarks]:\n"+JSON.stringify(S.ot.map(r=>[r.sno,r.date,r.shift,r.timing,r.ext,r.ot,r.inc,r.rem]))+"\nEscort rows [Sno,Date,Shift,Flight,Incharge,Remarks]:\n"+JSON.stringify(S.esc.map(r=>[r.sno,r.date,r.shift,r.flight,r.inc,r.rem]))+"\nOT minutes per month: "+JSON.stringify(mk)}
+async function ask(q){const inp=$("#ask");q=q||(inp&&inp.value.trim());if(!q)return;if(inp)inp.value="";
+ S.chat.push({role:"user",content:q});const a={role:"assistant",content:"Thinking…"};S.chat.push(a);render();
+ try{const sample=await claude.use("sample");if(!sample)throw{message:"AI chat isn't available in this view."};
+  const msgs=S.chat.slice(0,-1).map((m,i)=>({role:m.role,content:i==0?ctx()+"\n\nQuestion: "+m.content:m.content}));
+  const r=await sample(msgs,{cache:false,onText:({text})=>{a.content=text;const el=document.querySelector("#msgs .m:last-child");if(el)el.textContent=text}});
+  a.content=r.text}catch(e){a.content=e.code=="rate_limited"?"Too many requests — try again in a moment.":(e.message||"Couldn't reach the AI.")}
+ render()}
+load(false);
+</script></body></html>
