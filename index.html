@@ -78,6 +78,12 @@ nav button{padding:6px 4px;flex:1}
 .tb tr[data-edit]{cursor:pointer}.tb tr[data-edit]:active{background:var(--bd)}
 .tb .mt td{background:color-mix(in srgb,var(--ac) 14%,var(--card));font-weight:700;font-size:11.5px;padding:7px 6px;white-space:normal}
 .tb .pill{padding:1px 5px;font-size:10px;display:inline-block}
+.tb{table-layout:auto;font-size:10px}
+.tb th{text-transform:none;font-size:10px;font-weight:500;white-space:normal;padding:8px 3px}
+.tb td{padding:8px 3px;overflow:visible;text-overflow:clip}
+.tb td.w{white-space:normal;word-break:break-word}
+.tb .pill{background:color-mix(in srgb,var(--ac) 18%,var(--card));color:var(--ac);font-weight:700;border-radius:999px;padding:2px 7px;font-size:10px}
+.tb .mt td{padding:5px 4px;font-size:10.5px}
 </style></head><body>
 <header><div><h1>⏱ OT &amp; Escort Dashboard</h1><div class="sub" id="status">Starting…</div></div>
 <div style="display:flex;gap:6px"><button class="btn ghost" id="refresh">↻</button><button class="btn ghost" id="logout">Sign out</button></div></header>
@@ -141,11 +147,13 @@ const DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 function rowHTML(x,k){const ot=k=="ot",ds=x.d?DN[x.d.getDay()]+" "+x.d.getDate()+" "+MN[x.d.getMonth()]:x.date,end=(x.ext||"").split(" - ")[1]||"";
  return`<div class="rw"><div class="r1"><b>${esc(ds)}</b><span class="sh">${esc(x.shift)}</span>${ot?`<span class="pill">${hm(x.min)}</span>`:`<span class="pill">${esc(x.flight||"—")}</span>`}<span class="sp"></span><button class="ic" data-edit="${x.row}" data-s="${k}">✎</button><button class="ic" data-del="${x.row}" data-s="${k}">🗑</button></div><div class="r2">${ot?esc(x.timing.replace(" - ","–"))+" → "+esc(end)+" · ":""}${esc(x.inc)}${x.rem?" · "+esc(x.rem):""}</div></div>`}
 function list(k){const q=S.q.toLowerCase(),ot=k=="ot",rows=fl(S[k]).filter(x=>!q||JSON.stringify(x).toLowerCase().includes(q)).sort((a,b)=>((a.d||0)-(b.d||0)||a.row-b.row)*(S.asc?1:-1));
- const W=ot?[6,11,7,15,15,12,15,19]:[7,14,9,20,22,28],H=ot?["S.No","Date","Shift","Timing","Ext. till","OT","Incharge","Remarks"]:["Sno","Date","Shift","Flight","Incharge","Remarks"];let body="",cur="";
- rows.forEach(x=>{if(x.key!=cur){cur=x.key;const g=rows.filter(y=>y.key==cur);body+=`<tr class="mt"><td colspan="${W.length}">${cur=="?"?"No date":mlabel(cur)} · ${g.length} entries${ot?" · "+hm(g.reduce((s,y)=>s+y.min,0)):""}</td></tr>`}
-  const ds=x.d?x.d.getDate()+"-"+MN[x.d.getMonth()]:esc(x.date);
-  body+=`<tr data-edit="${x.row}" data-s="${k}"><td>${esc(x.sno)}</td><td>${ds}</td><td><b>${esc(x.shift)}</b></td>`+(ot?`<td>${esc(x.timing.replace(" - ","-"))}</td><td>${esc(x.ext.replace(" - ","-"))}</td><td><span class="pill">${esc(x.ot)}</span></td>`:`<td>${esc(x.flight)}</td>`)+`<td class="w">${esc(x.inc)}</td><td class="w">${esc(x.rem)}</td></tr>`});
- return`<div class="bar"><input type="search" id="q" placeholder="Search…" value="${esc(S.q)}"><button class="btn ghost" id="srt">${S.asc?"↑ Oldest first":"↓ Newest first"}</button><button class="btn ghost" id="exp">⇩ CSV</button></div>`+(body?`<div class="wrap"><table class="tb"><colgroup>${W.map(w=>`<col style="width:${w}%">`).join("")}</colgroup><thead><tr>${H.map(t=>`<th>${t}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div><div class="sub" style="text-align:center;margin-top:8px">Tap a row to edit or delete</div>`:'<div class="empty">No rows</div>')}
+ const H=ot?["S.No","Date","Shift","Shift Timing","Extended Till","OT Hours","Incharge","Remarks"]:["Sno","Date","Shift","Flight Number","Incharge","Remarks"];let body="",cur="";
+ rows.forEach(x=>{if(x.key!=cur){cur=x.key;const g=rows.filter(y=>y.key==cur);body+=`<tr class="mt"><td colspan="${H.length}">${cur=="?"?"No date":mlabel(cur)} · ${g.length} entries${ot?" · "+hm(g.reduce((s,y)=>s+y.min,0)):""}</td></tr>`}
+  const ds=x.d?x.d.getDate()+"-"+MN[x.d.getMonth()]+"-"+x.d.getFullYear():esc(x.date);
+  body+=`<tr data-edit="${x.row}" data-s="${k}"><td>${esc(x.sno)}</td><td>${ds}</td><td>${esc(x.shift)}</td>`+(ot?`<td>${esc(x.timing)}</td><td>${esc(x.ext)}</td><td><span class="pill">${esc(x.ot)}</span></td>`:`<td>${esc(x.flight)}</td>`)+`<td>${esc(x.inc)}</td><td class="w">${esc(x.rem)}</td></tr>`});
+ return`<div class="bar"><input type="search" id="q" placeholder="Search…" value="${esc(S.q)}"><button class="btn ghost" id="srt">${S.asc?"↑ Oldest first":"↓ Newest first"}</button><button class="btn ghost" id="exp">⇩ CSV</button></div>`+(body?`<div class="wrap"><table class="tb"><thead><tr>${H.map(t=>`<th>${t}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div><div class="sub" style="text-align:center;margin-top:8px">Tap a row to edit or delete</div>`:'<div class="empty">No rows</div>')}
+function fitTable(){const w=document.querySelector(".wrap"),t=w&&w.querySelector("table");if(!t)return;t.style.zoom=1;const s=w.clientWidth/Math.max(t.scrollWidth,t.offsetWidth);if(s<1)t.style.zoom=Math.max(.55,s)}
+addEventListener("resize",()=>{if(S.tab=="data")fitTable()});
 function exportCSV(){const k=S.sheet,rows=fl(S[k]),hd=k=="ot"?["S.No","Date","Shift","Shift Timing","Extended Till","OT Hours","Incharge","Remarks"]:["Sno","Date","Shift","Flight","Incharge","Remarks"];
  const g=x=>k=="ot"?[x.sno,x.date,x.shift,x.timing,x.ext,x.ot,x.inc,x.rem]:[x.sno,x.date,x.shift,x.flight,x.inc,x.rem];
  const csv=[hd,...rows.map(g)].map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
@@ -185,7 +193,7 @@ function render(){
  const seg=S.tab=="data"?`<div class="seg"><button data-sh="ot" class="${S.sheet=="ot"?"on":""}">OT</button><button data-sh="esc" class="${S.sheet=="esc"?"on":""}">Escort</button></div>`:"";
  const mo=!["chat","cal"].includes(S.tab)?`<div class="bar"><select id="mo"><option value="all">All months</option>${months().map(k=>`<option value="${k}" ${S.month==k?"selected":""}>${mlabel(k)}</option>`).join("")}</select>${seg}</div>`:"";
  $("#view").innerHTML=mo+(S.tab=="dash"?dash():S.tab=="chat"?chatView():S.tab=="cal"?calView():S.tab=="pay"?payView():list(S.sheet))+(S.tab=="data"?'<button class="fab" id="fab">＋</button>':"");
- if(S.tab=="chat"){const m=$("#msgs");m.scrollTop=m.scrollHeight}if(S.tab=="pay")payCalc()}
+ if(S.tab=="chat"){const m=$("#msgs");m.scrollTop=m.scrollHeight}if(S.tab=="pay")payCalc();if(S.tab=="data")fitTable()}
 document.addEventListener("click",e=>{const g=e.target.closest("[data-sh],[data-edit],[data-del],[data-close],[data-cal],[data-day],[data-add],#fab,#fsave,#fdel,#lgo,#logout,#refresh,#srt,#exp");if(!g)return;const k=g.dataset.s||S.sheet;
  if(g.dataset.sh){S.sheet=g.dataset.sh;S.q="";render()}
  else if(g.dataset.edit)openForm(+g.dataset.edit,k)
