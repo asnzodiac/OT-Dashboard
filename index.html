@@ -69,6 +69,7 @@ nav button{padding:6px 4px;flex:1}
 .cd{aspect-ratio:1/1.05;border:1px solid var(--bd);border-radius:9px;background:var(--card);padding:3px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:11px;cursor:pointer;position:relative}
 .cd b{font-size:12px}.cd small{font-size:9.5px;font-weight:700}.cd.sel{outline:2px solid var(--ac)}.cd.tod b{color:var(--ac)}.cd u{position:absolute;top:1px;right:3px;text-decoration:none;font-size:8px}
 .card label{display:block;font-size:12px;color:var(--mut);margin-top:10px}.card label input{width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px}
+:root{--gr:#16a34a}.cd.ot{border-color:var(--gr)}.cd.ot b,.cd.ot small{color:#fff}.cd.ot.tod b{text-decoration:underline}.cd.ot u{color:#fff}
 </style></head><body>
 <header><div><h1>⏱ OT &amp; Escort Dashboard</h1><div class="sub" id="status">Starting…</div></div>
 <div style="display:flex;gap:6px"><button class="btn ghost" id="refresh">↻</button><button class="btn ghost" id="logout">Sign out</button></div></header>
@@ -142,8 +143,8 @@ function calView(){const{y,m}=S.cal,first=new Date(y,m,1).getDay(),n=new Date(y,
  S.ot.filter(inM).forEach(r=>slot(r).h+=r.min);S.esc.filter(inM).forEach(r=>slot(r).e++);
  const tot=Object.values(by).reduce((s,o)=>s+o.h,0),td=ymd(new Date());let c="";
  ["S","M","T","W","T","F","S"].forEach(x=>c+=`<em>${x}</em>`);for(let i=0;i<first;i++)c+="<i></i>";
- for(let d=1;d<=n;d++){const key=ymd(new Date(y,m,d)),o=by[d]||{h:0,e:0},p=o.h?Math.min(75,18+o.h/6):0;
-  c+=`<button class="cd ${key==S.day?"sel":""} ${key==td?"tod":""}" data-day="${key}" style="background:color-mix(in srgb,var(--ac) ${p}%,var(--card))"><b>${d}</b><small>${o.h?hs(o.h):""}</small>${o.e?"<u>✈</u>":""}</button>`}
+ for(let d=1;d<=n;d++){const key=ymd(new Date(y,m,d)),o=by[d]||{h:0,e:0},p=o.h?Math.min(95,55+o.h/6):0;
+  c+=`<button class="cd ${o.h?"ot":""} ${key==S.day?"sel":""} ${key==td?"tod":""}" data-day="${key}" style="${o.h?`background:color-mix(in srgb,var(--gr) ${p}%,var(--card))`:""}"><b>${d}</b><small>${o.h?hs(o.h):""}</small>${o.e?"<u>✈</u>":""}</button>`}
  const same=r=>r.d&&ymd(r.d)==S.day,dO=S.day?S.ot.filter(same):[],dE=S.day?S.esc.filter(same):[];
  return`<div class="card"><div class="mh" style="position:static"><button class="btn ghost" data-cal="-1">‹</button><b>${MN[m]} ${y}</b><button class="btn ghost" data-cal="1">›</button></div><div class="sub" style="text-align:center;margin:2px 0 8px">Month OT: ${hm(tot)} · ✈ = escort</div><div class="cal">${c}</div></div>`+
  (S.day?`<div class="mh" style="position:static">${dd(S.day).toDateString().slice(0,10)}<span>${hm(dO.reduce((s,r)=>s+r.min,0))} OT</span></div>`+dO.map(r=>rowHTML(r,"ot")).join("")+dE.map(r=>rowHTML(r,"esc")).join("")+(dO.length+dE.length?"":'<div class="empty">Nothing logged</div>')+'<div class="acts" style="justify-content:flex-start"><button class="btn ghost" data-add="ot">＋ OT</button><button class="btn ghost" data-add="esc">＋ Escort</button></div>':'<div class="empty">Tap a date</div>')}
