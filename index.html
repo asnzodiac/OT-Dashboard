@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OT Dashboard</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#4f6df5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="OT Log"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--fg:#1b2333;--mut:#6b7590;--ac:#4f6df5;--ac2:#18b394;--bd:#e2e7f1;--warn:#e8a317;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1320;--card:#171e30;--fg:#e7ebf6;--mut:#8a95b3;--ac:#7b92ff;--ac2:#3fd3b4;--bd:#273049}}
+:root[data-theme="dark"]{--bg:#0e1320;--card:#171e30;--fg:#e7ebf6;--mut:#8a95b3;--ac:#7b92ff;--ac2:#3fd3b4;--bd:#273049}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif}
+header{padding:18px 16px 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+h1{margin:0;font-size:21px}.sub{color:var(--mut);font-size:12.5px;margin-top:2px}
+button,select,input{font:inherit;color:var(--fg)}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:8px 13px;cursor:pointer}
+.btn.ghost{background:var(--card);color:var(--fg);border:1px solid var(--bd)}
+nav{display:flex;gap:6px;padding:6px 16px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;overflow-x:auto}
+nav button{flex:1;white-space:nowrap;background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:8px 14px;cursor:pointer}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{padding:8px 16px 40px;max-width:960px;margin:auto}
+.banner{background:color-mix(in srgb,var(--warn) 18%,var(--card));border:1px solid var(--warn);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:13px}
+.bar{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+select,input[type=search],.chat input{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 10px}
+input[type=search]{flex:1;min-width:140px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px}
+.kpi b{display:block;font-size:24px;margin-top:2px}.kpi span{color:var(--mut);font-size:12px}
+.card h3{margin:0 0 10px;font-size:14px;color:var(--mut);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px}
+.row{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:13px}.row i{width:70px;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row div{flex:1;background:var(--bd);border-radius:6px;height:12px;overflow:hidden}.row div u{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:6px}
+.row em{width:64px;text-align:right;font-style:normal;color:var(--mut)}
+.wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:14px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
+th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--bd)}
+th{color:var(--mut);font-weight:600;cursor:pointer;position:sticky;top:0;background:var(--card)}
+.pill{background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border-radius:999px;padding:2px 9px;font-weight:600}
+.chat{display:flex;flex-direction:column;gap:8px}
+.msgs{display:flex;flex-direction:column;gap:8px;min-height:240px}
+.m{padding:9px 12px;border-radius:14px;max-width:88%;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--ac);color:#fff}.m.a{align-self:flex-start;background:var(--card);border:1px solid var(--bd)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:6px 11px;font-size:12.5px;cursor:pointer}
+.send{display:flex;gap:8px}.send input{flex:1}
+.empty{color:var(--mut);text-align:center;padding:24px}
+[hidden]{display:none!important}
+input,select{font-size:16px}main{padding-bottom:110px}
+nav{position:fixed;top:auto;bottom:0;left:0;right:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd);background:var(--card);justify-content:space-around;overflow:visible}
+nav button{border:0;background:none;border-radius:12px;display:flex;flex-direction:column;align-items:center;font-size:11px;padding:6px 18px;color:var(--mut)}
+nav button span{font-size:20px}nav button.on{background:none;color:var(--ac);font-weight:700}
+#login{display:none}.locked #login{display:flex;position:fixed;inset:0;align-items:center;justify-content:center;background:var(--bg);z-index:20;padding:20px}
+.lg{width:100%;max-width:340px;text-align:center;display:flex;flex-direction:column;gap:10px}.lg img{border-radius:18px;margin:auto}.lg input{font-size:16px}
+.locked main,.locked nav{display:none}
+#modal{position:fixed;inset:0;background:#0007;z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.sheet h2{margin:0 0 6px;font-size:18px}.sheet label{display:block;font-size:12px;color:var(--mut);margin-top:10px}
+.sheet input,.sheet select{width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}.err{color:#e5484d;font-size:13px;min-height:18px}
+.fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:var(--ac);color:#fff;font-size:28px;box-shadow:0 6px 18px #0004;z-index:6}
+.ic{background:none;border:0;font-size:16px;cursor:pointer;padding:4px 7px}
+.seg{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden}.seg button{background:var(--card);border:0;padding:8px 14px}.seg .on{background:var(--ac);color:#fff}
+</style></head><body>
+<header><div><h1>⏱ OT &amp; Escort Dashboard</h1><div class="sub" id="status">Starting…</div></div>
+<div style="display:flex;gap:6px"><button class="btn ghost" id="refresh">↻</button><button class="btn ghost" id="logout">Sign out</button></div></header>
+<nav id="nav"></nav>
+<div id="login"><div class="card lg"><img src="icon-192.png" width="72" height="72" alt=""><h1>OT Dashboard</h1><div class="sub">Sign in once — you stay signed in on this device</div><input type="password" id="pw" placeholder="Password" autocomplete="current-password"><div class="err" id="lerr"></div><button class="btn" id="lgo">Sign in</button></div></div><div id="modal" hidden></div>
+<main><div id="banner"></div><div id="view"></div></main>
+<script>
+const API="https://script.google.com/macros/s/AKfycbxwiDvbJ9sZCgSon2I7V3TC5M_Noui7h7PjtfPavw4KEPE7nlOpJ6CVNqobegCsnoxQjw/exec";
+const S={ot:[],esc:[],demo:false,tab:"dash",sheet:"ot",month:"all",q:"",sort:{},chat:[]};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const mins=t=>{const m=/(\d+)\s*H\s*(\d+)\s*M/i.exec(t||"");return m?+m[1]*60+ +m[2]:0};
+const hm=m=>Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m";
+function pdate(s){const m=/(\d{1,2})-(\w{3})-(\d{4})/.exec(s||"");if(m)return new Date(+m[3],MN.indexOf(m[2]),+m[1]);const d=new Date(s);return isNaN(d)?null:d}
+const mkey=d=>d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"):"?";
+const mlabel=k=>{const[y,m]=k.split("-");return MN[+m-1]+" "+y};
+function toOT(r){const d=pdate(r[1]);return{sno:r[0],date:r[1],d,shift:r[2]||"",timing:r[3]||"",ext:r[4]||"",ot:r[5]||"",min:mins(r[5]),inc:r[6]||"",rem:r[7]||"",key:mkey(d)}}
+function toEsc(r){const d=pdate(r[1]);return{sno:r[0],date:r[1],d,shift:r[2]||"",flight:r[3]||"",inc:r[4]||"",rem:r[5]||"",key:mkey(d)}}
+function demo(){const sh=["M","B1","B2","G","A","E","N"],nm=["Niyas","Sajra","Bestin","Yazeen","Alex"],ot=[],es=[];
+for(let i=0;i<26;i++){const d=new Date(2026,5+Math.floor(i/9),2+(i%9)*3),m=(i*47%140)+10,ds=d.getDate()+"-"+MN[d.getMonth()]+"-"+d.getFullYear();
+ot.push(toOT([i+1,ds,sh[i%7],"0800 - 1630","0800 - "+(1630+Math.floor(m/60)*100+m%60),Math.floor(m/60)+"H"+m%60+"M",nm[i%5],i%4?"":"Late arrival"]));
+es.push(toEsc([i+1,ds,sh[(i+2)%7],["EK"+(500+i),"QR"+(300+i),"AI"+(900+i)][i%3],nm[(i+1)%5],""]))}
+S.ot=ot;S.esc=es}
+function status(t){$("#status").textContent=t}
+let TOK=localStorage.getItem("ot_tok")||"";
+const SHIFTS=["M","B1","B2","G","A","E","E1","E2","N"];
+async function api(type,p){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type,token:TOK,...p})});const j=await r.json();
+ if(j.error==="auth"){signOut(true);throw{message:"Session expired"}}if(j.error)throw{message:j.error};return j}
+function showLogin(){document.body.classList.add("locked");$("#status").textContent="Signed out"}
+function signOut(local){if(!local&&TOK)api("logout").catch(()=>{});TOK="";localStorage.removeItem("ot_tok");localStorage.removeItem("ot_cache");S.ot=[];S.esc=[];S.chat=[];showLogin()}
+async function doLogin(){const pw=$("#pw").value;if(!pw)return;$("#lerr").textContent="";$("#lgo").disabled=true;
+ try{const j=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({type:"login",password:pw})}).then(r=>r.json());
+  if(j.error)throw{message:j.error};TOK=j.token;localStorage.setItem("ot_tok",TOK);document.body.classList.remove("locked");$("#pw").value="";load()}
+ catch(e){$("#lerr").textContent=e.message||"Couldn't connect"}$("#lgo").disabled=false}
+function applyData(j){S.ot=(j.ot||[]).map(x=>({...toOT(x.v),row:x.row}));S.esc=(j.esc||[]).map(x=>({...toEsc(x.v),row:x.row}))}
+async function load(){
+ if(!TOK)return showLogin();
+ try{const c=JSON.parse(localStorage.getItem("ot_cache")||"null");if(c&&!S.ot.length&&!S.esc.length){applyData(c);render()}}catch(e){}
+ status("Syncing…");$("#banner").innerHTML="";
+ try{const j=await api("data");applyData(j);try{localStorage.setItem("ot_cache",JSON.stringify(j))}catch(e){}
+  status("Live · "+S.ot.length+" OT · "+S.esc.length+" escorts · "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}))}
+ catch(e){if(TOK){status("Offline");$("#banner").innerHTML='<div class="banner">Could not refresh: '+esc(e.message)+'. Showing last loaded data.</div>'}}
+ render()}
+const months=()=>[...new Set(S.ot.concat(S.esc).map(r=>r.key))].filter(k=>k!="?").sort();
+const fl=a=>S.month=="all"?a:a.filter(r=>r.key==S.month);
+function bars(map,fmt){const e=Object.entries(map).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...e.map(x=>x[1]));
+ return e.length?e.map(([k,v])=>`<div class="row"><i title="${esc(k)}">${esc(k)}</i><div><u style="width:${v/mx*100}%"></u></div><em>${fmt(v)}</em></div>`).join(""):'<div class="empty">No data</div>'}
+function monthChart(){const mk={};S.ot.forEach(r=>mk[r.key]=(mk[r.key]||0)+r.min);const ks=Object.keys(mk).filter(k=>k!="?").sort();
+ if(!ks.length)return'<div class="empty">No data</div>';const mx=Math.max(1,...ks.map(k=>mk[k])),w=60,H=150;
+ return`<svg viewBox="0 0 ${ks.length*w+10} ${H+34}" style="width:100%;max-height:230px">`+ks.map((k,i)=>{const h=mk[k]/mx*H;return`<rect x="${i*w+12}" y="${H-h+8}" width="38" height="${h}" rx="7" fill="var(--ac)" opacity=".9"/><text x="${i*w+31}" y="${H-h+2}" text-anchor="middle" font-size="10" fill="var(--fg)">${hm(mk[k])}</text><text x="${i*w+31}" y="${H+24}" text-anchor="middle" font-size="10" fill="var(--mut)">${mlabel(k)}</text>`}).join("")+"</svg>"}
+function dash(){const o=fl(S.ot),e=fl(S.esc),tot=o.reduce((s,r)=>s+r.min,0),mx=o.reduce((a,r)=>r.min>a.min?r:a,{min:0});
+ const sh={},ic={};o.forEach(r=>{sh[r.shift]=(sh[r.shift]||0)+r.min;r.inc.split(",").map(x=>x.trim()).filter(Boolean).forEach(n=>ic[n]=(ic[n]||0)+1)});
+ const ef={};e.forEach(r=>ef[r.shift]=(ef[r.shift]||0)+1);
+ return`<div class="kpis"><div class="card kpi"><span>Total OT</span><b>${hm(tot)}</b></div><div class="card kpi"><span>OT entries</span><b>${o.length}</b></div><div class="card kpi"><span>Avg / entry</span><b>${o.length?hm(Math.round(tot/o.length)):"–"}</b></div><div class="card kpi"><span>Longest OT</span><b>${mx.min?hm(mx.min):"–"}</b></div><div class="card kpi"><span>Escort flights</span><b>${e.length}</b></div></div>
+ <div class="card"><h3>OT hours by month</h3>${monthChart()}</div>
+ <div class="grid"><div class="card"><h3>OT by shift</h3>${bars(sh,hm)}</div><div class="card"><h3>Escorts by shift</h3>${bars(ef,v=>v)}</div><div class="card"><h3>Shift incharge (OT entries)</h3>${bars(ic,v=>v)}</div></div>`}
+function table(kind){const rows=fl(S[kind]),cols=kind=="ot"?[["sno","S.No"],["date","Date"],["shift","Shift"],["timing","Shift Timing"],["ext","Extended Till"],["ot","OT Hours"],["inc","Incharge"],["rem","Remarks"]]:[["sno","Sno"],["date","Date"],["shift","Shift"],["flight","Flight"],["inc","Incharge"],["rem","Remarks"]];
+ const q=S.q.toLowerCase();let r=rows.filter(x=>!q||JSON.stringify(x).toLowerCase().includes(q));const s=S.sort[kind];
+ if(s)r=[...r].sort((a,b)=>{let x=s.k=="date"?a.d:s.k=="ot"?a.min:a[s.k],y=s.k=="date"?b.d:s.k=="ot"?b.min:b[s.k];return(x>y?1:x<y?-1:0)*s.dir});
+ return`<div class="bar"><input type="search" id="q" placeholder="Search…" value="${esc(S.q)}"></div><div class="wrap"><table><thead><tr>${cols.map(c=>`<th data-k="${c[0]}" data-t="${kind}">${c[1]}${s&&s.k==c[0]?(s.dir>0?" ▲":" ▼"):""}</th>`).join("")}<th></th></tr></thead><tbody>${r.map(x=>"<tr>"+cols.map(c=>`<td>${c[0]=="ot"?'<span class="pill">'+esc(x.ot)+"</span>":esc(x[c[0]])}</td>`).join("")+`<td><button class="ic" data-edit="${x.row}">✎</button><button class="ic" data-del="${x.row}">🗑</button></td></tr>`).join("")||`<tr><td colspan="9" class="empty">No rows</td></tr>`}</tbody></table></div>`}
+function chatView(){return`<div class="chat card"><div class="chips">${["How much OT in total?","Which month had the most OT?","Which shift gives me the most OT?","Who is incharge most often?","Any pattern in my escorts?"].map(t=>`<button data-ask="${esc(t)}">${esc(t)}</button>`).join("")}</div><div class="msgs" id="msgs">${S.chat.map(m=>`<div class="m ${m.role=="user"?"u":"a"}">${esc(m.content)}</div>`).join("")||'<div class="empty">Ask anything about your OT or escort sheets.</div>'}</div><div class="send"><input id="ask" placeholder="Ask about your data…"><button class="btn" id="go">Send</button></div></div>`}
+const t24=s=>/^\d{4}$/.test(s)?s.slice(0,2)+":"+s.slice(2):"";
+const ymd=d=>d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"):"";
+function openForm(row){const ot=S.sheet=="ot",r=row?S[S.sheet].find(x=>x.row==row):null,v=r||{shift:"M",inc:"",rem:"",flight:""};
+ const names=[...new Set(S.ot.concat(S.esc).flatMap(x=>x.inc.split(",").map(n=>n.trim()).filter(Boolean)))];
+ $("#modal").innerHTML=`<div class="sheet"><h2>${r?"Edit":"Add"} ${ot?"OT entry":"escort"}</h2>
+ <label>Date<input type="date" id="f_date" value="${ymd(r?r.d:new Date())}"></label>
+ <label>Shift<select id="f_shift">${SHIFTS.map(s=>`<option ${v.shift==s?"selected":""}>${s}</option>`).join("")}</select></label>
+ ${ot?`<label>Shift start<input type="time" id="f_s" value="${t24((r&&r.timing||"0800").slice(0,4))}"></label><label>Extended till<input type="time" id="f_e" value="${t24((r&&r.ext||"").slice(-4))}"></label>`:`<label>Flight number<input id="f_fl" value="${esc(v.flight)}"></label>`}
+ <label>Shift incharge<input id="f_inc" list="nm" value="${esc(v.inc)}"><datalist id="nm">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist></label>
+ <label>Remarks (optional)<input id="f_rem" value="${esc(v.rem)}"></label>
+ <div class="err" id="ferr"></div><div class="acts"><button class="btn ghost" data-close>Cancel</button><button class="btn" id="fsave" data-row="${row||""}">Save</button></div></div>`;
+ $("#modal").hidden=false}
+async function save(row){const ot=S.sheet=="ot",f={date:$("#f_date").value,shift:$("#f_shift").value,incharge:$("#f_inc").value.trim(),remarks:$("#f_rem").value.trim()};
+ if(ot){f.shiftStart=$("#f_s").value;f.extendedTill=$("#f_e").value}else f.flight=$("#f_fl").value.trim();
+ if(!f.date||!f.incharge||(ot?!f.shiftStart||!f.extendedTill:!f.flight)){$("#ferr").textContent="Please fill all required fields";return}
+ $("#fsave").disabled=true;try{await api(row?"update":"add",{sheet:ot?"ot":"escort",row,f});$("#modal").hidden=true;load()}catch(e){$("#ferr").textContent=e.message;$("#fsave").disabled=false}}
+function render(){
+ $("#nav").innerHTML=[["dash","📊","Dashboard"],["data","🗂️","Data"],["chat","✨","Ask AI"]].map(t=>`<button data-t="${t[0]}" class="${S.tab==t[0]?"on":""}"><span>${t[1]}</span>${t[2]}</button>`).join("");
+ const seg=S.tab=="data"?`<div class="seg"><button data-sh="ot" class="${S.sheet=="ot"?"on":""}">OT</button><button data-sh="esc" class="${S.sheet=="esc"?"on":""}">Escort</button></div>`:"";
+ const mo=S.tab!="chat"?`<div class="bar"><select id="mo"><option value="all">All months</option>${months().map(k=>`<option value="${k}" ${S.month==k?"selected":""}>${mlabel(k)}</option>`).join("")}</select>${seg}</div>`:"";
+ $("#view").innerHTML=mo+(S.tab=="dash"?dash():S.tab=="chat"?chatView():table(S.sheet))+(S.tab=="data"?'<button class="fab" id="fab">＋</button>':"");
+ if(S.tab=="chat"){const m=$("#msgs");m.scrollTop=m.scrollHeight}}
+document.addEventListener("click",e=>{const g=e.target.closest("[data-sh],[data-edit],[data-del],[data-close],#fab,#fsave,#lgo,#logout,#refresh");if(!g)return;
+ if(g.dataset.sh){S.sheet=g.dataset.sh;S.q="";render()}
+ else if(g.dataset.edit)openForm(+g.dataset.edit)
+ else if(g.id=="fab")openForm()
+ else if(g.hasAttribute("data-close"))$("#modal").hidden=true
+ else if(g.id=="fsave")save(g.dataset.row?+g.dataset.row:0)
+ else if(g.dataset.del){if(confirm("Delete this row?"))api("delete",{sheet:S.sheet=="ot"?"ot":"escort",row:+g.dataset.del}).then(load).catch(x=>alert(x.message))}
+ else if(g.id=="lgo")doLogin()
+ else if(g.id=="logout"){if(confirm("Sign out of this device?"))signOut()}
+ else if(g.id=="refresh")load()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&TOK)load()});
+document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-ask]");if(!t)return;
+ if(t.tagName=="TH"){const k=t.dataset.k,c=S.sort[t.dataset.t];S.sort[t.dataset.t]={k,dir:c&&c.k==k?-c.dir:1};render()}
+ else if(t.dataset.ask)ask(t.dataset.ask);
+ else if(t.closest("nav")){S.tab=t.dataset.t;render()}});
+document.addEventListener("change",e=>{if(e.target.id=="mo"){S.month=e.target.value;render()}});
+document.addEventListener("input",e=>{if(e.target.id=="q"){S.q=e.target.value;const p=e.target.selectionStart;render();const i=$("#q");i.focus();i.setSelectionRange(p,p)}});
+document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="ask")ask();if(e.key=="Enter"&&e.target.id=="pw")doLogin()});
+document.addEventListener("click",e=>{if(e.target.id=="go")ask()});
+
+function ctx(){const mk={};S.ot.forEach(r=>mk[r.key]=(mk[r.key]||0)+r.min);
+ return"You are a data analyst inside Aswin's shift dashboard. Answer concisely from this data only. OT hours were calculated beyond an 8.5-hour shift. Say so if the data can't answer.\n"+(S.demo?"NOTE: this is demo data, not real.\n":"")+"OT rows [S.No,Date,Shift,Shift Timing,Extended Till,OT Hours,Incharge,Remarks]:\n"+JSON.stringify(S.ot.map(r=>[r.sno,r.date,r.shift,r.timing,r.ext,r.ot,r.inc,r.rem]))+"\nEscort rows [Sno,Date,Shift,Flight,Incharge,Remarks]:\n"+JSON.stringify(S.esc.map(r=>[r.sno,r.date,r.shift,r.flight,r.inc,r.rem]))+"\nOT minutes per month: "+JSON.stringify(mk)}
+async function ask(q){const inp=$("#ask");q=q||(inp&&inp.value.trim());if(!q)return;if(inp)inp.value="";
+ S.chat.push({role:"user",content:q});const a={role:"assistant",content:"Thinking…"};S.chat.push(a);render();
+ try{const msgs=S.chat.slice(0,-1).map((m,i)=>({role:m.role,content:i==0?ctx()+"\n\nQuestion: "+m.content:m.content}));
+  a.content=(await api("chat",{messages:msgs})).text}catch(e){a.content="Chat failed: "+(e.message||"couldn't reach the AI.")}
+ render()}
+if(TOK)load();else showLogin();
+</script></body></html>
