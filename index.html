@@ -60,6 +60,15 @@ nav button span{font-size:20px}nav button.on{background:none;color:var(--ac);fon
 .fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:var(--ac);color:#fff;font-size:28px;box-shadow:0 6px 18px #0004;z-index:6}
 .ic{background:none;border:0;font-size:16px;cursor:pointer;padding:4px 7px}
 .seg{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden}.seg button{background:var(--card);border:0;padding:8px 14px}.seg .on{background:var(--ac);color:#fff}
+nav button{padding:6px 4px;flex:1}
+.mh{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 4px 4px;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-size:13px;z-index:2}.mh span{color:var(--mut);font-weight:500}
+.rw{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px 10px;margin:6px 0}
+.r1{display:flex;align-items:center;gap:8px}.r1 b{font-size:14px;min-width:74px}.sh{background:var(--bd);border-radius:6px;padding:1px 7px;font-weight:700;font-size:12px}.sp{flex:1}
+.r2{color:var(--mut);font-size:12px;margin-top:2px;overflow-wrap:anywhere}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.cal i{visibility:hidden}.cal em{font-style:normal;text-align:center;color:var(--mut);font-size:11px}
+.cd{aspect-ratio:1/1.05;border:1px solid var(--bd);border-radius:9px;background:var(--card);padding:3px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:11px;cursor:pointer;position:relative}
+.cd b{font-size:12px}.cd small{font-size:9.5px;font-weight:700}.cd.sel{outline:2px solid var(--ac)}.cd.tod b{color:var(--ac)}.cd u{position:absolute;top:1px;right:3px;text-decoration:none;font-size:8px}
+.card label{display:block;font-size:12px;color:var(--mut);margin-top:10px}.card label input{width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px}
 </style></head><body>
 <header><div><h1>⏱ OT &amp; Escort Dashboard</h1><div class="sub" id="status">Starting…</div></div>
 <div style="display:flex;gap:6px"><button class="btn ghost" id="refresh">↻</button><button class="btn ghost" id="logout">Sign out</button></div></header>
@@ -68,7 +77,7 @@ nav button span{font-size:20px}nav button.on{background:none;color:var(--ac);fon
 <main><div id="banner"></div><div id="view"></div></main>
 <script>
 const API="https://script.google.com/macros/s/AKfycbxwiDvbJ9sZCgSon2I7V3TC5M_Noui7h7PjtfPavw4KEPE7nlOpJ6CVNqobegCsnoxQjw/exec";
-const S={ot:[],esc:[],demo:false,tab:"dash",sheet:"ot",month:"all",q:"",sort:{},chat:[]};
+const S={ot:[],esc:[],demo:false,tab:"dash",sheet:"ot",asc:false,cal:{y:new Date().getFullYear(),m:new Date().getMonth()},day:"",month:"all",q:"",sort:{},chat:[]};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -117,40 +126,66 @@ function dash(){const o=fl(S.ot),e=fl(S.esc),tot=o.reduce((s,r)=>s+r.min,0),mx=o
  return`<div class="kpis"><div class="card kpi"><span>Total OT</span><b>${hm(tot)}</b></div><div class="card kpi"><span>OT entries</span><b>${o.length}</b></div><div class="card kpi"><span>Avg / entry</span><b>${o.length?hm(Math.round(tot/o.length)):"–"}</b></div><div class="card kpi"><span>Longest OT</span><b>${mx.min?hm(mx.min):"–"}</b></div><div class="card kpi"><span>Escort flights</span><b>${e.length}</b></div></div>
  <div class="card"><h3>OT hours by month</h3>${monthChart()}</div>
  <div class="grid"><div class="card"><h3>OT by shift</h3>${bars(sh,hm)}</div><div class="card"><h3>Escorts by shift</h3>${bars(ef,v=>v)}</div><div class="card"><h3>Shift incharge (OT entries)</h3>${bars(ic,v=>v)}</div></div>`}
-function table(kind){const rows=fl(S[kind]),cols=kind=="ot"?[["sno","S.No"],["date","Date"],["shift","Shift"],["timing","Shift Timing"],["ext","Extended Till"],["ot","OT Hours"],["inc","Incharge"],["rem","Remarks"]]:[["sno","Sno"],["date","Date"],["shift","Shift"],["flight","Flight"],["inc","Incharge"],["rem","Remarks"]];
- const q=S.q.toLowerCase();let r=rows.filter(x=>!q||JSON.stringify(x).toLowerCase().includes(q));const s=S.sort[kind];
- if(s)r=[...r].sort((a,b)=>{let x=s.k=="date"?a.d:s.k=="ot"?a.min:a[s.k],y=s.k=="date"?b.d:s.k=="ot"?b.min:b[s.k];return(x>y?1:x<y?-1:0)*s.dir});
- return`<div class="bar"><input type="search" id="q" placeholder="Search…" value="${esc(S.q)}"></div><div class="wrap"><table><thead><tr>${cols.map(c=>`<th data-k="${c[0]}" data-t="${kind}">${c[1]}${s&&s.k==c[0]?(s.dir>0?" ▲":" ▼"):""}</th>`).join("")}<th></th></tr></thead><tbody>${r.map(x=>"<tr>"+cols.map(c=>`<td>${c[0]=="ot"?'<span class="pill">'+esc(x.ot)+"</span>":esc(x[c[0]])}</td>`).join("")+`<td><button class="ic" data-edit="${x.row}">✎</button><button class="ic" data-del="${x.row}">🗑</button></td></tr>`).join("")||`<tr><td colspan="9" class="empty">No rows</td></tr>`}</tbody></table></div>`}
+const hs=m=>Math.floor(m/60)+"h"+(m%60?String(m%60).padStart(2,"0"):"");
+const dd=s=>{const[a,b,c]=s.split("-");return new Date(+a,+b-1,+c)};
+const DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function rowHTML(x,k){const ot=k=="ot",ds=x.d?DN[x.d.getDay()]+" "+x.d.getDate()+" "+MN[x.d.getMonth()]:x.date,end=(x.ext||"").split(" - ")[1]||"";
+ return`<div class="rw"><div class="r1"><b>${esc(ds)}</b><span class="sh">${esc(x.shift)}</span>${ot?`<span class="pill">${hm(x.min)}</span>`:`<span class="pill">${esc(x.flight||"—")}</span>`}<span class="sp"></span><button class="ic" data-edit="${x.row}" data-s="${k}">✎</button><button class="ic" data-del="${x.row}" data-s="${k}">🗑</button></div><div class="r2">${ot?esc(x.timing.replace(" - ","–"))+" → "+esc(end)+" · ":""}${esc(x.inc)}${x.rem?" · "+esc(x.rem):""}</div></div>`}
+function list(k){const q=S.q.toLowerCase(),rows=fl(S[k]).filter(x=>!q||JSON.stringify(x).toLowerCase().includes(q)).sort((a,b)=>((a.d||0)-(b.d||0)||a.row-b.row)*(S.asc?1:-1));let out="",cur="";
+ rows.forEach(x=>{if(x.key!=cur){cur=x.key;const g=rows.filter(y=>y.key==cur);out+=`<div class="mh">${cur=="?"?"No date":mlabel(cur)}<span>${g.length} entries${k=="ot"?" · "+hm(g.reduce((s,y)=>s+y.min,0)):""}</span></div>`}out+=rowHTML(x,k)});
+ return`<div class="bar"><input type="search" id="q" placeholder="Search…" value="${esc(S.q)}"><button class="btn ghost" id="srt">${S.asc?"↑ Oldest":"↓ Newest"}</button><button class="btn ghost" id="exp">⇩ CSV</button></div>`+(out||'<div class="empty">No rows</div>')}
+function exportCSV(){const k=S.sheet,rows=fl(S[k]),hd=k=="ot"?["S.No","Date","Shift","Shift Timing","Extended Till","OT Hours","Incharge","Remarks"]:["Sno","Date","Shift","Flight","Incharge","Remarks"];
+ const g=x=>k=="ot"?[x.sno,x.date,x.shift,x.timing,x.ext,x.ot,x.inc,x.rem]:[x.sno,x.date,x.shift,x.flight,x.inc,x.rem];
+ const csv=[hd,...rows.map(g)].map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv"}));a.download=k+"-log.csv";a.click()}
+function calView(){const{y,m}=S.cal,first=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),by={},inM=r=>r.d&&r.d.getFullYear()==y&&r.d.getMonth()==m,slot=r=>by[r.d.getDate()]=by[r.d.getDate()]||{h:0,e:0};
+ S.ot.filter(inM).forEach(r=>slot(r).h+=r.min);S.esc.filter(inM).forEach(r=>slot(r).e++);
+ const tot=Object.values(by).reduce((s,o)=>s+o.h,0),td=ymd(new Date());let c="";
+ ["S","M","T","W","T","F","S"].forEach(x=>c+=`<em>${x}</em>`);for(let i=0;i<first;i++)c+="<i></i>";
+ for(let d=1;d<=n;d++){const key=ymd(new Date(y,m,d)),o=by[d]||{h:0,e:0},p=o.h?Math.min(75,18+o.h/6):0;
+  c+=`<button class="cd ${key==S.day?"sel":""} ${key==td?"tod":""}" data-day="${key}" style="background:color-mix(in srgb,var(--ac) ${p}%,var(--card))"><b>${d}</b><small>${o.h?hs(o.h):""}</small>${o.e?"<u>✈</u>":""}</button>`}
+ const same=r=>r.d&&ymd(r.d)==S.day,dO=S.day?S.ot.filter(same):[],dE=S.day?S.esc.filter(same):[];
+ return`<div class="card"><div class="mh" style="position:static"><button class="btn ghost" data-cal="-1">‹</button><b>${MN[m]} ${y}</b><button class="btn ghost" data-cal="1">›</button></div><div class="sub" style="text-align:center;margin:2px 0 8px">Month OT: ${hm(tot)} · ✈ = escort</div><div class="cal">${c}</div></div>`+
+ (S.day?`<div class="mh" style="position:static">${dd(S.day).toDateString().slice(0,10)}<span>${hm(dO.reduce((s,r)=>s+r.min,0))} OT</span></div>`+dO.map(r=>rowHTML(r,"ot")).join("")+dE.map(r=>rowHTML(r,"esc")).join("")+(dO.length+dE.length?"":'<div class="empty">Nothing logged</div>')+'<div class="acts" style="justify-content:flex-start"><button class="btn ghost" data-add="ot">＋ OT</button><button class="btn ghost" data-add="esc">＋ Escort</button></div>':'<div class="empty">Tap a date</div>')}
+function payView(){let p={};try{p=JSON.parse(localStorage.getItem("ot_pay")||"{}")}catch(e){}
+ return`<div class="card"><h3>OT pay estimate</h3><div class="banner">Use the figures from your employer's payroll policy — this only applies the numbers you enter.</div><label>Eligible monthly pay (₹)<input type="number" id="p_pay" value="${p.pay||""}"></label><label>Monthly divisor (hours)<input type="number" id="p_div" value="${p.div||""}"></label><label>OT multiplier<input type="number" step="0.01" id="p_mul" value="${p.mul||""}"></label><div id="p_out"></div></div>`}
+function payCalc(){const pay=+$("#p_pay").value,dv=+$("#p_div").value,mul=+$("#p_mul").value,h=fl(S.ot).reduce((s,r)=>s+r.min,0)/60;
+ $("#p_out").innerHTML=pay>0&&dv>0&&mul>0?`<div class="kpis"><div class="card kpi"><span>OT hours used</span><b>${h.toFixed(2)}</b></div><div class="card kpi"><span>Hourly base</span><b>₹${(pay/dv).toFixed(2)}</b></div><div class="card kpi"><span>Estimated pay</span><b>₹${(pay/dv*mul*h).toLocaleString("en-IN",{maximumFractionDigits:0})}</b></div></div>`:'<div class="sub" style="margin-top:10px">Fill all three values · period follows the month filter above</div>'}
 function chatView(){return`<div class="chat card"><div class="chips">${["How much OT in total?","Which month had the most OT?","Which shift gives me the most OT?","Who is incharge most often?","Any pattern in my escorts?"].map(t=>`<button data-ask="${esc(t)}">${esc(t)}</button>`).join("")}</div><div class="msgs" id="msgs">${S.chat.map(m=>`<div class="m ${m.role=="user"?"u":"a"}">${esc(m.content)}</div>`).join("")||'<div class="empty">Ask anything about your OT or escort sheets.</div>'}</div><div class="send"><input id="ask" placeholder="Ask about your data…"><button class="btn" id="go">Send</button></div></div>`}
 const t24=s=>/^\d{4}$/.test(s)?s.slice(0,2)+":"+s.slice(2):"";
 const ymd=d=>d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"):"";
-function openForm(row){const ot=S.sheet=="ot",r=row?S[S.sheet].find(x=>x.row==row):null,v=r||{shift:"M",inc:"",rem:"",flight:""};
+function openForm(row,k,dt){k=k||S.sheet;S.fk=k;const ot=k=="ot",r=row?S[k].find(x=>x.row==row):null,v=r||{shift:"M",inc:"",rem:"",flight:""};
  const names=[...new Set(S.ot.concat(S.esc).flatMap(x=>x.inc.split(",").map(n=>n.trim()).filter(Boolean)))];
  $("#modal").innerHTML=`<div class="sheet"><h2>${r?"Edit":"Add"} ${ot?"OT entry":"escort"}</h2>
- <label>Date<input type="date" id="f_date" value="${ymd(r?r.d:new Date())}"></label>
+ <label>Date<input type="date" id="f_date" value="${ymd(r?r.d:(dt||new Date()))}"></label>
  <label>Shift<select id="f_shift">${SHIFTS.map(s=>`<option ${v.shift==s?"selected":""}>${s}</option>`).join("")}</select></label>
  ${ot?`<label>Shift start<input type="time" id="f_s" value="${t24((r&&r.timing||"0800").slice(0,4))}"></label><label>Extended till<input type="time" id="f_e" value="${t24((r&&r.ext||"").slice(-4))}"></label>`:`<label>Flight number<input id="f_fl" value="${esc(v.flight)}"></label>`}
  <label>Shift incharge<input id="f_inc" list="nm" value="${esc(v.inc)}"><datalist id="nm">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist></label>
  <label>Remarks (optional)<input id="f_rem" value="${esc(v.rem)}"></label>
  <div class="err" id="ferr"></div><div class="acts"><button class="btn ghost" data-close>Cancel</button><button class="btn" id="fsave" data-row="${row||""}">Save</button></div></div>`;
  $("#modal").hidden=false}
-async function save(row){const ot=S.sheet=="ot",f={date:$("#f_date").value,shift:$("#f_shift").value,incharge:$("#f_inc").value.trim(),remarks:$("#f_rem").value.trim()};
+async function save(row){const ot=S.fk=="ot",f={date:$("#f_date").value,shift:$("#f_shift").value,incharge:$("#f_inc").value.trim(),remarks:$("#f_rem").value.trim()};
  if(ot){f.shiftStart=$("#f_s").value;f.extendedTill=$("#f_e").value}else f.flight=$("#f_fl").value.trim();
  if(!f.date||!f.incharge||(ot?!f.shiftStart||!f.extendedTill:!f.flight)){$("#ferr").textContent="Please fill all required fields";return}
  $("#fsave").disabled=true;try{await api(row?"update":"add",{sheet:ot?"ot":"escort",row,f});$("#modal").hidden=true;load()}catch(e){$("#ferr").textContent=e.message;$("#fsave").disabled=false}}
 function render(){
- $("#nav").innerHTML=[["dash","📊","Dashboard"],["data","🗂️","Data"],["chat","✨","Ask AI"]].map(t=>`<button data-t="${t[0]}" class="${S.tab==t[0]?"on":""}"><span>${t[1]}</span>${t[2]}</button>`).join("");
+ $("#nav").innerHTML=[["dash","📊","Overview"],["data","🗂️","Records"],["cal","📅","Calendar"],["pay","₹","Pay"],["chat","✨","Ask AI"]].map(t=>`<button data-t="${t[0]}" class="${S.tab==t[0]?"on":""}"><span>${t[1]}</span>${t[2]}</button>`).join("");
  const seg=S.tab=="data"?`<div class="seg"><button data-sh="ot" class="${S.sheet=="ot"?"on":""}">OT</button><button data-sh="esc" class="${S.sheet=="esc"?"on":""}">Escort</button></div>`:"";
- const mo=S.tab!="chat"?`<div class="bar"><select id="mo"><option value="all">All months</option>${months().map(k=>`<option value="${k}" ${S.month==k?"selected":""}>${mlabel(k)}</option>`).join("")}</select>${seg}</div>`:"";
- $("#view").innerHTML=mo+(S.tab=="dash"?dash():S.tab=="chat"?chatView():table(S.sheet))+(S.tab=="data"?'<button class="fab" id="fab">＋</button>':"");
- if(S.tab=="chat"){const m=$("#msgs");m.scrollTop=m.scrollHeight}}
-document.addEventListener("click",e=>{const g=e.target.closest("[data-sh],[data-edit],[data-del],[data-close],#fab,#fsave,#lgo,#logout,#refresh");if(!g)return;
+ const mo=!["chat","cal"].includes(S.tab)?`<div class="bar"><select id="mo"><option value="all">All months</option>${months().map(k=>`<option value="${k}" ${S.month==k?"selected":""}>${mlabel(k)}</option>`).join("")}</select>${seg}</div>`:"";
+ $("#view").innerHTML=mo+(S.tab=="dash"?dash():S.tab=="chat"?chatView():S.tab=="cal"?calView():S.tab=="pay"?payView():list(S.sheet))+(S.tab=="data"?'<button class="fab" id="fab">＋</button>':"");
+ if(S.tab=="chat"){const m=$("#msgs");m.scrollTop=m.scrollHeight}if(S.tab=="pay")payCalc()}
+document.addEventListener("click",e=>{const g=e.target.closest("[data-sh],[data-edit],[data-del],[data-close],[data-cal],[data-day],[data-add],#fab,#fsave,#lgo,#logout,#refresh,#srt,#exp");if(!g)return;const k=g.dataset.s||S.sheet;
  if(g.dataset.sh){S.sheet=g.dataset.sh;S.q="";render()}
- else if(g.dataset.edit)openForm(+g.dataset.edit)
- else if(g.id=="fab")openForm()
+ else if(g.dataset.edit)openForm(+g.dataset.edit,k)
+ else if(g.dataset.add)openForm(0,g.dataset.add,S.day?dd(S.day):null)
+ else if(g.dataset.day){S.day=g.dataset.day;render()}
+ else if(g.dataset.cal){const c=S.cal,d=new Date(c.y,c.m+ +g.dataset.cal,1);S.cal={y:d.getFullYear(),m:d.getMonth()};S.day="";render()}
+ else if(g.id=="fab")openForm(0,S.sheet)
  else if(g.hasAttribute("data-close"))$("#modal").hidden=true
  else if(g.id=="fsave")save(g.dataset.row?+g.dataset.row:0)
- else if(g.dataset.del){if(confirm("Delete this row?"))api("delete",{sheet:S.sheet=="ot"?"ot":"escort",row:+g.dataset.del}).then(load).catch(x=>alert(x.message))}
+ else if(g.dataset.del){if(confirm("Delete this row?"))api("delete",{sheet:k=="ot"?"ot":"escort",row:+g.dataset.del}).then(load).catch(x=>alert(x.message))}
+ else if(g.id=="srt"){S.asc=!S.asc;render()}
+ else if(g.id=="exp")exportCSV()
  else if(g.id=="lgo")doLogin()
  else if(g.id=="logout"){if(confirm("Sign out of this device?"))signOut()}
  else if(g.id=="refresh")load()});
@@ -160,7 +195,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-a
  else if(t.dataset.ask)ask(t.dataset.ask);
  else if(t.closest("nav")){S.tab=t.dataset.t;render()}});
 document.addEventListener("change",e=>{if(e.target.id=="mo"){S.month=e.target.value;render()}});
-document.addEventListener("input",e=>{if(e.target.id=="q"){S.q=e.target.value;const p=e.target.selectionStart;render();const i=$("#q");i.focus();i.setSelectionRange(p,p)}});
+document.addEventListener("input",e=>{if(e.target.id&&e.target.id.startsWith("p_")){try{localStorage.setItem("ot_pay",JSON.stringify({pay:$("#p_pay").value,div:$("#p_div").value,mul:$("#p_mul").value}))}catch(x){}payCalc();return}if(e.target.id=="q"){S.q=e.target.value;const p=e.target.selectionStart;render();const i=$("#q");i.focus();i.setSelectionRange(p,p)}});
 document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="ask")ask();if(e.key=="Enter"&&e.target.id=="pw")doLogin()});
 document.addEventListener("click",e=>{if(e.target.id=="go")ask()});
 
