@@ -228,4 +228,4 @@ async function ask(q){const inp=$("#ask");q=q||(inp&&inp.value.trim());if(!q)ret
   a.content=(await api("chat",{messages:msgs})).text}catch(e){a.content="Chat failed: "+(e.message||"couldn't reach the AI.")}
  render()}
 if(TOK)load();else showLogin();
-</script></body></html>
+</script><script src="certs.js"></script></body></html>
